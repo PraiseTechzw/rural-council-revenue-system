@@ -6,7 +6,7 @@ type PaymentListResult = {
 	meta?: ApiResponse<PaymentRecord[]>["meta"];
 };
 
-export async function listPayments(params: Record<string, string | number | undefined>) {
+export async function listPayments(params: Record<string, string | number | boolean | undefined>) {
 	const { data } = await apiClient.get<ApiResponse<PaymentRecord[]>>("/payments", { params });
 	return {
 		rows: data.data ?? [],

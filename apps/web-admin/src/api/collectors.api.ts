@@ -1,7 +1,7 @@
 import { apiClient } from "./client";
 import type { ApiResponse, Collector } from "@/types/api";
 
-export async function listCollectors(params: Record<string, string | number | undefined>) {
+export async function listCollectors(params: Record<string, string | number | boolean | undefined>) {
 	const { data } = await apiClient.get<ApiResponse<Collector[]>>("/collectors", { params });
 	return {
 		rows: data.data ?? [],

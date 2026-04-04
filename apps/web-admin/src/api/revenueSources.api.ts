@@ -1,7 +1,7 @@
 import { apiClient } from "./client";
 import type { ApiResponse, RevenueSource } from "@/types/api";
 
-export async function listRevenueSources(params: Record<string, string | number | undefined>) {
+export async function listRevenueSources(params: Record<string, string | number | boolean | undefined>) {
 	const { data } = await apiClient.get<ApiResponse<RevenueSource[]>>("/revenue-sources", { params });
 	return {
 		rows: data.data ?? [],

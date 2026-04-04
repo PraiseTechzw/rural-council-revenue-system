@@ -37,7 +37,7 @@ export default function NewPaymentPage() {
 
 	const revenueSourcesQuery = useQuery({
 		queryKey: ["revenue-sources", "payment-form"],
-		queryFn: () => listRevenueSources({ page: 1, limit: 100, isActive: true })
+		queryFn: () => listRevenueSources({ page: 1, limit: 100, isActive: "true" })
 	});
 
 	const wardsQuery = useQuery({
