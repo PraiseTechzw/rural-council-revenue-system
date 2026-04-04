@@ -33,34 +33,50 @@ export const useAuthStore = create<AuthState>()(
 
 				set({ status: "hydrating", errorMessage: null });
 
-				const token = await getAccessToken();
-				if (!token) {
-					set({ token: null, user: null, status: "unauthenticated" });
-					return;
-				}
-
 				try {
+					const token = await getAccessToken();
+					if (!token) {
+						set({ token: null, user: null, status: "unauthenticated" });
+						return;
+					}
+
 					const user = await authApi.me();
 					set({ token, user, status: "authenticated" });
-				} catch {
+				} catch (error) {
 					await clearAccessToken();
-					set({ token: null, user: null, status: "unauthenticated" });
+					set({
+						token: null,
+						user: null,
+						status: "unauthenticated",
+						errorMessage: error instanceof Error ? error.message : "Session expired. Please sign in again."
+					});
 				}
 			},
 
 			async login(payload) {
 				set({ status: "hydrating", errorMessage: null });
-				const response = await authApi.login(payload);
+				try {
+					const response = await authApi.login(payload);
 
-				await saveAccessToken(response.accessToken);
-				const user = response.user ?? (await authApi.me());
+					await saveAccessToken(response.accessToken);
+					const user = response.user ?? (await authApi.me());
 
-				set({
-					token: response.accessToken,
-					user,
-					status: "authenticated",
-					errorMessage: null
-				});
+					set({
+						token: response.accessToken,
+						user,
+						status: "authenticated",
+						errorMessage: null
+					});
+				} catch (error) {
+					await clearAccessToken();
+					set({
+						token: null,
+						user: null,
+						status: "unauthenticated",
+						errorMessage: error instanceof Error ? error.message : "Login failed. Check your details and network."
+					});
+					throw error;
+				}
 			},
 
 			async logout() {
