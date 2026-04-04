@@ -31,6 +31,17 @@ function normalizePaymentDate(paymentDate: string) {
 	return paymentDate.includes("T") ? paymentDate.slice(0, 10) : paymentDate;
 }
 
+function parsePaymentDate(paymentDate: string) {
+	const normalized = normalizePaymentDate(paymentDate);
+	const parsed = new Date(normalized);
+
+	if (Number.isNaN(parsed.getTime())) {
+		throw new AppError("Payment date is invalid", 400, "INVALID_PAYMENT_DATE");
+	}
+
+	return parsed;
+}
+
 async function resolveCollector(input: CreatePaymentInput, actor: AuthUser) {
 	if (input.collectorId) {
 		const [collector] = await db
@@ -309,7 +320,7 @@ async function insertPaymentTx(
 	resolved: { payerId: string; collectorId: string; revenueSourceId: string; wardId: string | null }
 ) {
 	const paymentReceiptNumber = generateReceiptNumber();
-	const paymentDate = new Date(normalizePaymentDate(input.paymentDate));
+	const paymentDate = parsePaymentDate(input.paymentDate);
 	const normalizedPaymentMethod = normalizePaymentMethod(input.paymentMethod);
 
 	const [payment] = await tx

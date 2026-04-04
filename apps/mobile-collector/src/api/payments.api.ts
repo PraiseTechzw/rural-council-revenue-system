@@ -27,8 +27,6 @@ export const paymentsApi = {
 			paymentMethod: mapPaymentMethod(payload.paymentMethod),
 			paymentDate: payload.paymentDate.slice(0, 10),
 			notes: payload.notes,
-			collectorId: payload.collectorId,
-			wardId: payload.ward,
 			offlineReferenceId: payload.offlineReferenceId
 		});
 		return response.data;

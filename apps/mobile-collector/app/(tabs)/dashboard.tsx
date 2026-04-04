@@ -12,6 +12,7 @@ import { isToday } from "../../src/utils/helpers";
 export default function DashboardScreen() {
   const { user } = useAuth();
   const { transactions, pendingCount } = useOfflineQueue();
+  const wardLabel = user?.assignedWard ?? (user?.wardId ? "Assigned" : "Not assigned");
 
   const todayRecords = transactions.filter((tx) => isToday(tx.paymentDate));
   const todayAmount = todayRecords.reduce((sum, tx) => sum + tx.amount, 0);
@@ -22,7 +23,7 @@ export default function DashboardScreen() {
       <View style={styles.hero}>
         <Text style={styles.heroKicker}>Daily Overview</Text>
         <Text style={styles.greeting}>Welcome back, {user?.name ?? "Collector"}</Text>
-        <Text style={styles.ward}>Ward: {user?.assignedWard ?? "Not assigned"}</Text>
+        <Text style={styles.ward}>Ward: {wardLabel}</Text>
         <View style={styles.heroPills}>
           <View style={styles.heroPill}>
             <Text style={styles.heroPillLabel}>Today</Text>

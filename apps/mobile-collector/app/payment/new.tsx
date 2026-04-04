@@ -35,7 +35,7 @@ export default function NewPaymentScreen() {
     defaultValues: {
       payerName: "",
       payerReference: "",
-      revenueSource: "shop_rentals",
+      revenueSource: "shop_rental",
       amount: 0,
       paymentMethod: "cash",
       paymentDate: new Date().toISOString().slice(0, 10),
@@ -57,8 +57,6 @@ export default function NewPaymentScreen() {
       ...values,
       notes: values.notes || undefined,
       payerReference: values.payerReference || undefined,
-      collectorId: user?.id,
-      wardId: user?.wardId,
       offlineReferenceId
     };
 

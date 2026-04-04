@@ -8,6 +8,7 @@ import { useAuth } from "../../src/hooks/useAuth";
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
+  const wardLabel = user?.assignedWard ?? (user?.wardId ? "Assigned" : "Not assigned");
 
   return (
     <AppScreen>
@@ -29,7 +30,7 @@ export default function ProfileScreen() {
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Assigned Ward</Text>
-          <Text style={styles.value}>{user?.assignedWard ?? "Not assigned"}</Text>
+          <Text style={styles.value}>{wardLabel}</Text>
         </View>
       </View>
       <PrimaryButton
