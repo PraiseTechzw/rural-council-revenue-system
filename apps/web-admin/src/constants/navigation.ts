@@ -12,6 +12,7 @@ export const navigationItems: NavigationItem[] = [
   { href: "/dashboard/receipts", label: "Receipts", roles: ["admin", "finance_officer"] },
   { href: "/dashboard/reports", label: "Reports", roles: ["admin", "finance_officer"] },
   { href: "/dashboard/settings", label: "Settings", roles: ["admin", "finance_officer"] },
+  { href: "/dashboard/users", label: "Users", roles: ["admin"] },
   { href: "/dashboard/collectors", label: "Collectors", roles: ["admin"] },
   { href: "/dashboard/revenue-sources", label: "Revenue Sources", roles: ["admin"] },
   { href: "/dashboard/wards", label: "Wards", roles: ["admin"] }
@@ -31,7 +32,7 @@ export const dashboardRoleSummaries: Record<DashboardRole, DashboardRoleSummary>
     title: "Administration Command Center",
     subtitle: "Manage the council's master data, operational controls, and revenue oversight in one place.",
     badge: "Admin access",
-    capabilities: ["Manage collectors", "Maintain wards", "Publish revenue sources", "Review finance activity"]
+    capabilities: ["Manage users", "Manage collectors", "Maintain wards", "Publish revenue sources", "Review finance activity"]
   },
   finance_officer: {
     title: "Finance Control Desk",
