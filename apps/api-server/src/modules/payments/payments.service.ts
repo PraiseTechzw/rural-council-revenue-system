@@ -231,6 +231,22 @@ async function loadPaymentById(paymentId: string): Promise<PaymentRecord | null>
 	return payment ?? null;
 }
 
+async function loadPaymentByIdTx(tx: typeof db, paymentId: string): Promise<PaymentRecord | null> {
+	const [payment] = await tx
+		.select(paymentSelect())
+		.from(payments)
+		.innerJoin(payers, eq(payments.payerId, payers.id))
+		.innerJoin(collectors, eq(payments.collectorId, collectors.id))
+		.innerJoin(users, eq(collectors.userId, users.id))
+		.innerJoin(revenueSources, eq(payments.revenueSourceId, revenueSources.id))
+		.leftJoin(wards, eq(payments.wardId, wards.id))
+		.leftJoin(receipts, eq(receipts.paymentId, payments.id))
+		.where(eq(payments.id, paymentId))
+		.limit(1);
+
+	return payment ?? null;
+}
+
 async function loadPaymentByOfflineReferenceId(offlineReferenceId: string) {
 	const [payment] = await db
 		.select(paymentSelect())
@@ -369,7 +385,7 @@ async function insertPaymentTx(
 		ipAddress: null
 	});
 
-	const created = await loadPaymentById(payment.id);
+	const created = await loadPaymentByIdTx(tx, payment.id);
 
 	if (!created) {
 		throw new AppError("Created payment could not be loaded", 500, "PAYMENT_CREATE_FAILED");
