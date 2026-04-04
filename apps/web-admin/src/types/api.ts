@@ -84,6 +84,20 @@ export type Collector = {
   wardCode?: string | null;
 };
 
+export type UserRecord = {
+  id: string;
+  roleId: string;
+  roleName: Role;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string | null;
+  isActive: boolean;
+  lastLoginAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type RevenueSource = {
   id: string;
   name: string;
