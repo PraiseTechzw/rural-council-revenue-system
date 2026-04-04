@@ -34,22 +34,22 @@ export default function RevenueSourcesPage() {
   });
 
   return (
-    <section className="space-y-4">
+    <section className="dashboard-page reveal">
       <header>
-        <h1 className="text-xl font-semibold text-slate-900">Revenue Sources</h1>
-        <p className="mt-1 text-sm text-slate-600">Configure council charge categories and active collection sources.</p>
+        <h1 className="dashboard-title">Revenue Sources</h1>
+        <p className="dashboard-subtitle">Configure collection categories, source codes, and operational status.</p>
       </header>
 
       <div className="grid gap-4 xl:grid-cols-[2fr,1fr]">
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-600">
+        <div className="premium-panel p-4">
+          <div className="premium-table-wrap">
+            <table className="premium-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Name</th>
-                  <th className="px-3 py-2 font-medium">Code</th>
-                  <th className="px-3 py-2 font-medium">Category</th>
-                  <th className="px-3 py-2 font-medium">Status</th>
+                  <th>Name</th>
+                  <th>Code</th>
+                  <th>Category</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -57,7 +57,7 @@ export default function RevenueSourcesPage() {
                   <tr
                     key={source.id}
                     onClick={() => setSelectedId(source.id)}
-                    className={`cursor-pointer border-t border-slate-100 ${selectedId === source.id ? "bg-brand-50" : "hover:bg-slate-50"}`}
+                    className={`cursor-pointer border-t border-[#e9decb] ${selectedId === source.id ? "bg-[#e7efe4]" : "hover:bg-[#f6f0e4]"}`}
                   >
                     <td className="px-3 py-2 text-slate-800">{source.name}</td>
                     <td className="px-3 py-2 text-slate-700">{source.code}</td>
@@ -71,7 +71,7 @@ export default function RevenueSourcesPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="premium-panel p-4">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Create Source</h2>
             <form
               className="space-y-3"
@@ -92,23 +92,23 @@ export default function RevenueSourcesPage() {
                 (event.currentTarget as HTMLFormElement).reset();
               }}
             >
-              <input name="name" placeholder="Name" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} required />
-              <input name="code" placeholder="Code" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} required />
-              <select name="category" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit}>
+              <input name="name" placeholder="Name" className="premium-input" disabled={!canEdit} required />
+              <input name="code" placeholder="Code" className="premium-input" disabled={!canEdit} required />
+              <select name="category" className="premium-input" disabled={!canEdit}>
                 <option value="shop_rental">shop_rental</option>
                 <option value="housing_stand">housing_stand</option>
                 <option value="mining_fee">mining_fee</option>
                 <option value="market_levy">market_levy</option>
                 <option value="other">other</option>
               </select>
-              <textarea name="description" placeholder="Description" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} rows={3} />
-              <button className="w-full rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white disabled:bg-slate-400" disabled={!canEdit || createMutation.isPending} type="submit">
+              <textarea name="description" placeholder="Description" className="premium-input" disabled={!canEdit} rows={3} />
+              <button className="premium-button w-full" disabled={!canEdit || createMutation.isPending} type="submit">
                 {createMutation.isPending ? "Saving..." : "Create source"}
               </button>
             </form>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="premium-panel p-4">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Update Selected</h2>
             {!selectedSource ? (
               <p className="text-sm text-slate-500">Select a source row to edit.</p>
@@ -134,15 +134,15 @@ export default function RevenueSourcesPage() {
                   });
                 }}
               >
-                <input name="name" defaultValue={selectedSource.name} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} />
-                <input name="code" defaultValue={selectedSource.code} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} />
-                <input name="category" defaultValue={selectedSource.category} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} />
-                <textarea name="description" defaultValue={selectedSource.description ?? ""} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} rows={3} />
-                <select name="isActive" defaultValue={selectedSource.isActive ? "true" : "false"} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit}>
+                <input name="name" defaultValue={selectedSource.name} className="premium-input" disabled={!canEdit} />
+                <input name="code" defaultValue={selectedSource.code} className="premium-input" disabled={!canEdit} />
+                <input name="category" defaultValue={selectedSource.category} className="premium-input" disabled={!canEdit} />
+                <textarea name="description" defaultValue={selectedSource.description ?? ""} className="premium-input" disabled={!canEdit} rows={3} />
+                <select name="isActive" defaultValue={selectedSource.isActive ? "true" : "false"} className="premium-input" disabled={!canEdit}>
                   <option value="true">Active</option>
                   <option value="false">Inactive</option>
                 </select>
-                <button className="w-full rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 disabled:opacity-50" disabled={!canEdit || updateMutation.isPending} type="submit">
+                <button className="premium-button-outline w-full" disabled={!canEdit || updateMutation.isPending} type="submit">
                   {updateMutation.isPending ? "Updating..." : "Update source"}
                 </button>
               </form>

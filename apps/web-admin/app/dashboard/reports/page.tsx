@@ -46,26 +46,26 @@ export default function ReportsPage() {
   const monthly = (monthlyQuery.data ?? {}) as Record<string, unknown>;
 
   return (
-    <section className="space-y-4">
+    <section className="dashboard-page reveal">
       <header>
-        <h1 className="text-xl font-semibold text-slate-900">Reports</h1>
-        <p className="mt-1 text-sm text-slate-600">Revenue analysis by period, source, collector, and ward.</p>
+        <h1 className="dashboard-title">Revenue Reports</h1>
+        <p className="dashboard-subtitle">Multi-angle analysis by time period, source, collector, and ward.</p>
       </header>
 
-      <div className="flex flex-col gap-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm sm:flex-row">
-        <input type="date" className="rounded-md border border-slate-300 px-3 py-2 text-sm" value={startDate} onChange={(event) => setStartDate(event.target.value)} />
-        <input type="date" className="rounded-md border border-slate-300 px-3 py-2 text-sm" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
+      <div className="premium-panel flex flex-col gap-2 p-4 sm:flex-row">
+        <input type="date" className="premium-input" value={startDate} onChange={(event) => setStartDate(event.target.value)} />
+        <input type="date" className="premium-input" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Daily Revenue</p>
-          <p className="mt-2 text-xl font-semibold text-slate-900">{formatCurrency(Number(daily.totalRevenue ?? 0))}</p>
+        <article className="premium-panel p-4">
+          <p className="premium-kicker">Daily Revenue</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{formatCurrency(Number(daily.totalRevenue ?? 0))}</p>
           <p className="mt-1 text-sm text-slate-600">Payments: {String(daily.paymentCount ?? 0)}</p>
         </article>
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Monthly Revenue</p>
-          <p className="mt-2 text-xl font-semibold text-slate-900">{formatCurrency(Number(monthly.totalRevenue ?? 0))}</p>
+        <article className="premium-panel p-4">
+          <p className="premium-kicker">Monthly Revenue</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{formatCurrency(Number(monthly.totalRevenue ?? 0))}</p>
           <p className="mt-1 text-sm text-slate-600">Payments: {String(monthly.paymentCount ?? 0)}</p>
         </article>
       </div>
@@ -106,15 +106,15 @@ function ReportTable({
   idField: string;
 }) {
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+    <section className="premium-panel p-4">
       <h2 className="mb-2 text-base font-semibold text-slate-900">{title}</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead className="bg-slate-50 text-left text-slate-600">
+      <div className="premium-table-wrap">
+        <table className="premium-table">
+          <thead>
             <tr>
-              <th className="px-3 py-2 font-medium">Name</th>
-              <th className="px-3 py-2 font-medium">Payments</th>
-              <th className="px-3 py-2 font-medium">Total</th>
+              <th>Name</th>
+              <th>Payments</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -126,7 +126,7 @@ function ReportTable({
               </tr>
             ) : (
               rows.map((row) => (
-                <tr key={String(row[idField] ?? Math.random())} className="border-t border-slate-100">
+                <tr key={String(row[idField] ?? Math.random())} className="border-t border-[#e9decb]">
                   <td className="px-3 py-2 text-slate-700">{String(row[nameField] ?? "N/A")}</td>
                   <td className="px-3 py-2 text-slate-700">{String(row.paymentCount ?? 0)}</td>
                   <td className="px-3 py-2 text-slate-700">{formatCurrency(Number(row.totalRevenue ?? 0))}</td>

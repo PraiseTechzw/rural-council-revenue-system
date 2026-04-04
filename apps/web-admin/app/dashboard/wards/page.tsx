@@ -33,21 +33,21 @@ export default function WardsPage() {
   });
 
   return (
-    <section className="space-y-4">
+    <section className="dashboard-page reveal">
       <header>
-        <h1 className="text-xl font-semibold text-slate-900">Wards</h1>
-        <p className="mt-1 text-sm text-slate-600">Maintain ward records used for collector and payer mapping.</p>
+        <h1 className="dashboard-title">Wards</h1>
+        <p className="dashboard-subtitle">Maintain ward registry for payer segmentation and collector assignment.</p>
       </header>
 
       <div className="grid gap-4 xl:grid-cols-[2fr,1fr]">
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-600">
+        <div className="premium-panel p-4">
+          <div className="premium-table-wrap">
+            <table className="premium-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Name</th>
-                  <th className="px-3 py-2 font-medium">Code</th>
-                  <th className="px-3 py-2 font-medium">Description</th>
+                  <th>Name</th>
+                  <th>Code</th>
+                  <th>Description</th>
                 </tr>
               </thead>
               <tbody>
@@ -55,7 +55,7 @@ export default function WardsPage() {
                   <tr
                     key={ward.id}
                     onClick={() => setSelectedId(ward.id)}
-                    className={`cursor-pointer border-t border-slate-100 ${selectedId === ward.id ? "bg-brand-50" : "hover:bg-slate-50"}`}
+                    className={`cursor-pointer border-t border-[#e9decb] ${selectedId === ward.id ? "bg-[#e7efe4]" : "hover:bg-[#f6f0e4]"}`}
                   >
                     <td className="px-3 py-2 text-slate-800">{ward.name}</td>
                     <td className="px-3 py-2 text-slate-700">{ward.code}</td>
@@ -68,7 +68,7 @@ export default function WardsPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="premium-panel p-4">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Create Ward</h2>
             <form
               className="space-y-3"
@@ -87,16 +87,16 @@ export default function WardsPage() {
                 (event.currentTarget as HTMLFormElement).reset();
               }}
             >
-              <input name="name" placeholder="Ward name" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" required disabled={!canEdit} />
-              <input name="code" placeholder="Ward code" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" required disabled={!canEdit} />
-              <textarea name="description" placeholder="Description" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" rows={3} disabled={!canEdit} />
-              <button className="w-full rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white disabled:bg-slate-400" type="submit" disabled={!canEdit || createMutation.isPending}>
+              <input name="name" placeholder="Ward name" className="premium-input" required disabled={!canEdit} />
+              <input name="code" placeholder="Ward code" className="premium-input" required disabled={!canEdit} />
+              <textarea name="description" placeholder="Description" className="premium-input" rows={3} disabled={!canEdit} />
+              <button className="premium-button w-full" type="submit" disabled={!canEdit || createMutation.isPending}>
                 {createMutation.isPending ? "Saving..." : "Create ward"}
               </button>
             </form>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="premium-panel p-4">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Update Selected</h2>
             {!selectedWard ? (
               <p className="text-sm text-slate-500">Select a ward row to edit.</p>
@@ -120,10 +120,10 @@ export default function WardsPage() {
                   });
                 }}
               >
-                <input name="name" defaultValue={selectedWard.name} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} />
-                <input name="code" defaultValue={selectedWard.code} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} />
-                <textarea name="description" defaultValue={selectedWard.description ?? ""} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" rows={3} disabled={!canEdit} />
-                <button className="w-full rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 disabled:opacity-50" disabled={!canEdit || updateMutation.isPending} type="submit">
+                <input name="name" defaultValue={selectedWard.name} className="premium-input" disabled={!canEdit} />
+                <input name="code" defaultValue={selectedWard.code} className="premium-input" disabled={!canEdit} />
+                <textarea name="description" defaultValue={selectedWard.description ?? ""} className="premium-input" rows={3} disabled={!canEdit} />
+                <button className="premium-button-outline w-full" disabled={!canEdit || updateMutation.isPending} type="submit">
                   {updateMutation.isPending ? "Updating..." : "Update ward"}
                 </button>
               </form>

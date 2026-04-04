@@ -37,14 +37,14 @@ export default function SettingsPage() {
   });
 
   return (
-    <section className="space-y-4">
+    <section className="dashboard-page reveal">
       <header>
-        <h1 className="text-xl font-semibold text-slate-900">Settings</h1>
-        <p className="mt-1 text-sm text-slate-600">Manage your profile session and password.</p>
+        <h1 className="dashboard-title">Settings</h1>
+        <p className="dashboard-subtitle">Manage profile credentials, access role details, and session controls.</p>
       </header>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <article className="premium-panel p-4">
           <h2 className="mb-3 text-base font-semibold text-slate-900">Current User</h2>
           <dl className="space-y-2 text-sm">
             <div>
@@ -63,7 +63,7 @@ export default function SettingsPage() {
 
           <button
             type="button"
-            className="mt-4 rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="premium-button-outline mt-4"
             onClick={async () => {
               await logout();
               router.replace("/login");
@@ -73,7 +73,7 @@ export default function SettingsPage() {
           </button>
         </article>
 
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <article className="premium-panel p-4">
           <h2 className="mb-3 text-base font-semibold text-slate-900">Change Password</h2>
 
           <form
@@ -94,17 +94,17 @@ export default function SettingsPage() {
               }
             })}
           >
-            <input type="password" placeholder="Current password" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" {...form.register("currentPassword")} />
+            <input type="password" placeholder="Current password" className="premium-input" {...form.register("currentPassword")} />
             {form.formState.errors.currentPassword ? <p className="text-xs text-rose-600">{form.formState.errors.currentPassword.message}</p> : null}
-            <input type="password" placeholder="New password" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" {...form.register("newPassword")} />
+            <input type="password" placeholder="New password" className="premium-input" {...form.register("newPassword")} />
             {form.formState.errors.newPassword ? <p className="text-xs text-rose-600">{form.formState.errors.newPassword.message}</p> : null}
-            <input type="password" placeholder="Confirm new password" className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" {...form.register("confirmPassword")} />
+            <input type="password" placeholder="Confirm new password" className="premium-input" {...form.register("confirmPassword")} />
             {form.formState.errors.confirmPassword ? <p className="text-xs text-rose-600">{form.formState.errors.confirmPassword.message}</p> : null}
 
             {errorMessage ? <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">{errorMessage}</p> : null}
             {resultMessage ? <p className="rounded-md bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{resultMessage}</p> : null}
 
-            <button className="w-full rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800" type="submit" disabled={form.formState.isSubmitting}>
+            <button className="premium-button w-full" type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Saving..." : "Change password"}
             </button>
           </form>

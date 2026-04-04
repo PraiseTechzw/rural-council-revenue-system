@@ -22,9 +22,9 @@ export default function ReceiptDetailPage() {
 
   if (receiptQuery.isError || !receiptQuery.data) {
     return (
-      <div className="space-y-4">
-        <p className="rounded-md bg-rose-50 px-3 py-2 text-sm text-rose-700">Unable to load receipt.</p>
-        <Link href="/dashboard/receipts" className="text-sm font-medium text-brand-700">
+      <div className="space-y-4 reveal">
+        <p className="rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">Unable to load receipt.</p>
+        <Link href="/dashboard/receipts" className="text-sm font-semibold text-[#23432e]">
           Back to receipts
         </Link>
       </div>
@@ -34,15 +34,15 @@ export default function ReceiptDetailPage() {
   const receipt = receiptQuery.data;
 
   return (
-    <section className="space-y-4">
+    <section className="dashboard-page reveal">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">Receipt {receipt.receiptNumber}</h1>
-        <Link href="/dashboard/receipts" className="text-sm font-medium text-brand-700">
+        <h1 className="dashboard-title">Receipt {receipt.receiptNumber}</h1>
+        <Link href="/dashboard/receipts" className="text-sm font-semibold text-[#23432e]">
           Back to receipts
         </Link>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="premium-panel p-5">
         <dl className="grid gap-4 text-sm md:grid-cols-2">
           <div>
             <dt className="text-slate-500">Payer</dt>
@@ -79,7 +79,7 @@ export default function ReceiptDetailPage() {
         </dl>
 
         {receipt.notes ? (
-          <div className="mt-4 border-t border-slate-200 pt-4">
+          <div className="mt-4 border-t border-[#ddcfb3] pt-4">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">Notes</h2>
             <p className="mt-1 text-sm text-slate-700">{receipt.notes}</p>
           </div>

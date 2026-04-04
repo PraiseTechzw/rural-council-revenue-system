@@ -64,30 +64,30 @@ export default function CollectorsPage() {
   const canEdit = user?.role === "admin";
 
   return (
-    <section className="space-y-4">
+    <section className="dashboard-page reveal">
       <header>
-        <h1 className="text-xl font-semibold text-slate-900">Collectors</h1>
-        <p className="mt-1 text-sm text-slate-600">Manage collector assignments and activity status.</p>
+        <h1 className="dashboard-title">Collectors</h1>
+        <p className="dashboard-subtitle">Manage assignment, employment metadata, and availability status.</p>
       </header>
 
       <div className="grid gap-4 xl:grid-cols-[2fr,1fr]">
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-600">
+        <div className="premium-panel p-4">
+          <div className="premium-table-wrap">
+            <table className="premium-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Collector</th>
-                  <th className="px-3 py-2 font-medium">Email</th>
-                  <th className="px-3 py-2 font-medium">Employee #</th>
-                  <th className="px-3 py-2 font-medium">Ward</th>
-                  <th className="px-3 py-2 font-medium">Status</th>
+                  <th>Collector</th>
+                  <th>Email</th>
+                  <th>Employee #</th>
+                  <th>Ward</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {collectorsQuery.data?.rows.map((collector) => (
                   <tr
                     key={collector.id}
-                    className={`cursor-pointer border-t border-slate-100 ${selectedId === collector.id ? "bg-brand-50" : "hover:bg-slate-50"}`}
+                    className={`cursor-pointer border-t border-[#e9decb] ${selectedId === collector.id ? "bg-[#e7efe4]" : "hover:bg-[#f6f0e4]"}`}
                     onClick={() => setSelectedId(collector.id)}
                   >
                     <td className="px-3 py-2 text-slate-800">{collector.userFirstName} {collector.userLastName}</td>
@@ -103,7 +103,7 @@ export default function CollectorsPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="premium-panel p-4">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Create Collector</h2>
             <form
               className="space-y-3"
@@ -120,7 +120,7 @@ export default function CollectorsPage() {
                 });
               })}
             >
-              <select className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" {...form.register("userId")} disabled={!canEdit}>
+              <select className="premium-input" {...form.register("userId")} disabled={!canEdit}>
                 <option value="">Select user</option>
                 {usersQuery.data?.rows.map((entry) => (
                   <option key={entry.id} value={entry.id}>
@@ -128,19 +128,19 @@ export default function CollectorsPage() {
                   </option>
                 ))}
               </select>
-              <input className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Ward ID (optional)" {...form.register("wardId")} disabled={!canEdit} />
-              <input className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" placeholder="Employee number" {...form.register("employeeNumber")} disabled={!canEdit} />
-              <select className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" {...form.register("status")} disabled={!canEdit}>
+              <input className="premium-input" placeholder="Ward ID (optional)" {...form.register("wardId")} disabled={!canEdit} />
+              <input className="premium-input" placeholder="Employee number" {...form.register("employeeNumber")} disabled={!canEdit} />
+              <select className="premium-input" {...form.register("status")} disabled={!canEdit}>
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
-              <button className="w-full rounded-md bg-brand-700 px-4 py-2 text-sm font-medium text-white disabled:bg-slate-400" disabled={!canEdit || createMutation.isPending} type="submit">
+              <button className="premium-button w-full" disabled={!canEdit || createMutation.isPending} type="submit">
                 {createMutation.isPending ? "Saving..." : "Create collector"}
               </button>
             </form>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="premium-panel p-4">
             <h2 className="mb-3 text-base font-semibold text-slate-900">Update Selected</h2>
             {!selectedCollector ? (
               <p className="text-sm text-slate-500">Select a collector from the table.</p>
@@ -164,13 +164,13 @@ export default function CollectorsPage() {
                   });
                 }}
               >
-                <input name="wardId" defaultValue={selectedCollector.wardId ?? ""} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} />
-                <input name="employeeNumber" defaultValue={selectedCollector.employeeNumber ?? ""} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit} />
-                <select name="status" defaultValue={selectedCollector.status} className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm" disabled={!canEdit}>
+                <input name="wardId" defaultValue={selectedCollector.wardId ?? ""} className="premium-input" disabled={!canEdit} />
+                <input name="employeeNumber" defaultValue={selectedCollector.employeeNumber ?? ""} className="premium-input" disabled={!canEdit} />
+                <select name="status" defaultValue={selectedCollector.status} className="premium-input" disabled={!canEdit}>
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </select>
-                <button className="w-full rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 disabled:opacity-50" disabled={!canEdit || updateMutation.isPending} type="submit">
+                <button className="premium-button-outline w-full" disabled={!canEdit || updateMutation.isPending} type="submit">
                   {updateMutation.isPending ? "Updating..." : "Update collector"}
                 </button>
               </form>

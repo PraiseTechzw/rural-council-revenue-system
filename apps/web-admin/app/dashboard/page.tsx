@@ -34,46 +34,46 @@ export default function DashboardPage() {
   const sourceSummary = (bySourceQuery.data ?? []) as Array<Record<string, unknown>>;
 
   return (
-    <section className="space-y-6">
+    <section className="dashboard-page reveal">
       <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-600">Overview of council revenue performance and collection activity.</p>
+        <h1 className="dashboard-title">Revenue Intelligence Desk</h1>
+        <p className="dashboard-subtitle">Live overview of council collections, daily flow, and operational momentum.</p>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Revenue Today</p>
-          <p className="mt-2 text-xl font-semibold text-slate-900">{formatCurrency(totalRevenueToday)}</p>
+        <article className="premium-panel p-4">
+          <p className="premium-kicker">Revenue Today</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{formatCurrency(totalRevenueToday)}</p>
         </article>
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Revenue This Month</p>
-          <p className="mt-2 text-xl font-semibold text-slate-900">{formatCurrency(totalRevenueMonth)}</p>
+        <article className="premium-panel p-4">
+          <p className="premium-kicker">Revenue This Month</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{formatCurrency(totalRevenueMonth)}</p>
         </article>
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Payments Today</p>
-          <p className="mt-2 text-xl font-semibold text-slate-900">{paymentCountToday}</p>
+        <article className="premium-panel p-4">
+          <p className="premium-kicker">Payments Today</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{paymentCountToday}</p>
         </article>
-        <article className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs uppercase tracking-wide text-slate-500">Active Collectors</p>
-          <p className="mt-2 text-xl font-semibold text-slate-900">{activeCollectorsCount}</p>
+        <article className="premium-panel p-4">
+          <p className="premium-kicker">Active Collectors</p>
+          <p className="mt-2 text-2xl font-semibold text-slate-900">{activeCollectorsCount}</p>
         </article>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <section className="xl:col-span-2 rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <section className="premium-panel xl:col-span-2 p-4">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-base font-semibold text-slate-900">Revenue by Source</h2>
-            <Link href="/dashboard/reports" className="text-sm font-medium text-brand-700">
+            <Link href="/dashboard/reports" className="text-sm font-semibold text-[#24442f] hover:text-[#183021]">
               Open reports
             </Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-600">
+          <div className="premium-table-wrap">
+            <table className="premium-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Source</th>
-                  <th className="px-3 py-2 font-medium">Payments</th>
-                  <th className="px-3 py-2 font-medium">Total</th>
+                  <th>Source</th>
+                  <th>Payments</th>
+                  <th>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -85,7 +85,7 @@ export default function DashboardPage() {
                   </tr>
                 ) : (
                   sourceSummary.slice(0, 6).map((row, index) => (
-                    <tr key={`${String(row.sourceId ?? index)}`} className="border-t border-slate-100">
+                    <tr key={`${String(row.sourceId ?? index)}`} className="border-t border-[#e9decb]">
                       <td className="px-3 py-2 text-slate-800">{String(row.sourceName ?? "Unknown")}</td>
                       <td className="px-3 py-2 text-slate-700">{String(row.paymentCount ?? 0)}</td>
                       <td className="px-3 py-2 text-slate-700">{formatCurrency(Number(row.totalRevenue ?? 0))}</td>
@@ -97,19 +97,19 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <section className="premium-panel-strong p-4">
           <h2 className="text-base font-semibold text-slate-900">Quick Links</h2>
           <div className="mt-3 space-y-2">
-            <Link href="/dashboard/payments" className="block rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+            <Link href="/dashboard/payments" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
               View payments
             </Link>
-            <Link href="/dashboard/receipts" className="block rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+            <Link href="/dashboard/receipts" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
               Lookup receipt
             </Link>
-            <Link href="/dashboard/reports" className="block rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+            <Link href="/dashboard/reports" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
               Open reports
             </Link>
-            <Link href="/dashboard/collectors" className="block rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+            <Link href="/dashboard/collectors" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
               Manage collectors
             </Link>
           </div>

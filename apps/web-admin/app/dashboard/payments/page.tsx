@@ -55,15 +55,15 @@ export default function PaymentsPage() {
   const totalPages = Number(paymentsQuery.data?.meta?.totalPages ?? 1);
 
   return (
-    <section className="space-y-4">
+    <section className="dashboard-page reveal">
       <header>
-        <h1 className="text-xl font-semibold text-slate-900">Payments</h1>
-        <p className="mt-1 text-sm text-slate-600">Track payment activity, receipt references, and collector performance.</p>
+        <h1 className="dashboard-title">Payments Ledger</h1>
+        <p className="dashboard-subtitle">Track transaction activity, validate references, and inspect individual payment records.</p>
       </header>
 
-      <div className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-4">
+      <div className="premium-panel grid gap-3 p-4 md:grid-cols-4">
         <input
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="premium-input"
           placeholder="Search receipt or payer"
           value={filters.search}
           onChange={(event) => {
@@ -73,7 +73,7 @@ export default function PaymentsPage() {
         />
         <input
           type="date"
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="premium-input"
           value={filters.startDate}
           onChange={(event) => {
             setPage(1);
@@ -82,7 +82,7 @@ export default function PaymentsPage() {
         />
         <input
           type="date"
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="premium-input"
           value={filters.endDate}
           onChange={(event) => {
             setPage(1);
@@ -90,7 +90,7 @@ export default function PaymentsPage() {
           }}
         />
         <select
-          className="rounded-md border border-slate-300 px-3 py-2 text-sm"
+          className="premium-input"
           value={filters.paymentMethod}
           onChange={(event) => {
             setPage(1);
@@ -106,17 +106,17 @@ export default function PaymentsPage() {
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[2fr,1fr]">
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 text-left text-slate-600">
+        <div className="premium-panel p-4">
+          <div className="premium-table-wrap">
+            <table className="premium-table">
+              <thead>
                 <tr>
-                  <th className="px-3 py-2 font-medium">Receipt</th>
-                  <th className="px-3 py-2 font-medium">Payer</th>
-                  <th className="px-3 py-2 font-medium">Collector</th>
-                  <th className="px-3 py-2 font-medium">Source</th>
-                  <th className="px-3 py-2 font-medium">Amount</th>
-                  <th className="px-3 py-2 font-medium">Date</th>
+                  <th>Receipt</th>
+                  <th>Payer</th>
+                  <th>Collector</th>
+                  <th>Source</th>
+                  <th>Amount</th>
+                  <th>Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -136,7 +136,7 @@ export default function PaymentsPage() {
                   paymentsQuery.data.rows.map((payment) => (
                     <tr
                       key={payment.id}
-                      className={`cursor-pointer border-t border-slate-100 ${selectedPaymentId === payment.id ? "bg-brand-50" : "hover:bg-slate-50"}`}
+                      className={`cursor-pointer border-t border-[#e9decb] ${selectedPaymentId === payment.id ? "bg-[#e7efe4]" : "hover:bg-[#f6f0e4]"}`}
                       onClick={() => setSelectedPaymentId(payment.id)}
                     >
                       <td className="px-3 py-2 text-slate-800">{payment.receipt.receiptNumber}</td>
@@ -169,7 +169,7 @@ export default function PaymentsPage() {
                 type="button"
                 onClick={() => setPage((prev) => Math.max(1, prev - 1))}
                 disabled={page <= 1}
-                className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+                className="premium-button-outline"
               >
                 Previous
               </button>
@@ -177,7 +177,7 @@ export default function PaymentsPage() {
                 type="button"
                 onClick={() => setPage((prev) => (prev < totalPages ? prev + 1 : prev))}
                 disabled={page >= totalPages}
-                className="rounded-md border border-slate-300 px-3 py-1.5 disabled:opacity-50"
+                className="premium-button-outline"
               >
                 Next
               </button>
@@ -185,39 +185,39 @@ export default function PaymentsPage() {
           </div>
         </div>
 
-        <aside className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+        <aside className="premium-panel-strong p-4">
           <h2 className="text-base font-semibold text-slate-900">Payment Detail</h2>
           {!selectedPaymentId ? (
-            <p className="mt-3 text-sm text-slate-500">Select a payment row to view details.</p>
+            <p className="mt-3 text-sm text-emerald-100/80">Select a payment row to view details.</p>
           ) : paymentDetailQuery.isLoading ? (
-            <p className="mt-3 text-sm text-slate-500">Loading details...</p>
+            <p className="mt-3 text-sm text-emerald-100/80">Loading details...</p>
           ) : paymentDetailQuery.isError || !paymentDetailQuery.data ? (
-            <p className="mt-3 text-sm text-rose-700">Unable to load payment details.</p>
+            <p className="mt-3 text-sm text-rose-200">Unable to load payment details.</p>
           ) : (
             <dl className="mt-3 space-y-2 text-sm">
               <div>
-                <dt className="text-slate-500">Receipt</dt>
-                <dd className="font-medium text-slate-900">{paymentDetailQuery.data.receipt.receiptNumber}</dd>
+                <dt className="text-emerald-100/70">Receipt</dt>
+                <dd className="font-medium text-white">{paymentDetailQuery.data.receipt.receiptNumber}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Amount</dt>
-                <dd className="font-medium text-slate-900">{formatCurrency(paymentDetailQuery.data.amount, paymentDetailQuery.data.currency)}</dd>
+                <dt className="text-emerald-100/70">Amount</dt>
+                <dd className="font-medium text-white">{formatCurrency(paymentDetailQuery.data.amount, paymentDetailQuery.data.currency)}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Method</dt>
-                <dd className="font-medium capitalize text-slate-900">{paymentDetailQuery.data.paymentMethod.replace("_", " ")}</dd>
+                <dt className="text-emerald-100/70">Method</dt>
+                <dd className="font-medium capitalize text-white">{paymentDetailQuery.data.paymentMethod.replace("_", " ")}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Status</dt>
-                <dd className="font-medium text-slate-900">{paymentDetailQuery.data.status}</dd>
+                <dt className="text-emerald-100/70">Status</dt>
+                <dd className="font-medium text-white">{paymentDetailQuery.data.status}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Sync Status</dt>
-                <dd className="font-medium text-slate-900">{paymentDetailQuery.data.syncStatus}</dd>
+                <dt className="text-emerald-100/70">Sync Status</dt>
+                <dd className="font-medium text-white">{paymentDetailQuery.data.syncStatus}</dd>
               </div>
               <div>
-                <dt className="text-slate-500">Notes</dt>
-                <dd className="text-slate-800">{paymentDetailQuery.data.notes ?? "-"}</dd>
+                <dt className="text-emerald-100/70">Notes</dt>
+                <dd className="text-emerald-50">{paymentDetailQuery.data.notes ?? "-"}</dd>
               </div>
             </dl>
           )}
