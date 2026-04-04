@@ -258,8 +258,12 @@ export default function NewPaymentScreen() {
           />
 
           <View style={styles.actionRow}>
-            <PrimaryButton label="Back" variant="secondary" onPress={handleBack} />
-            <PrimaryButton label="Next" onPress={handleNext} />
+            <View style={styles.actionButtonWrap}>
+              <PrimaryButton label="Back" variant="secondary" onPress={handleBack} />
+            </View>
+            <View style={styles.actionButtonWrap}>
+              <PrimaryButton label="Review Payment" onPress={handleNext} />
+            </View>
           </View>
         </View>
       ) : null}
@@ -294,8 +298,12 @@ export default function NewPaymentScreen() {
           {submitError ? <Text style={styles.error}>{submitError}</Text> : null}
 
           <View style={styles.actionRow}>
-            <PrimaryButton label="Back" variant="secondary" onPress={handleBack} />
-            <PrimaryButton label={isOnline ? "Submit Now" : "Queue Payment"} onPress={onSubmit} loading={mutation.isPending} />
+            <View style={styles.actionButtonWrap}>
+              <PrimaryButton label="Back" variant="secondary" onPress={handleBack} />
+            </View>
+            <View style={styles.actionButtonWrap}>
+              <PrimaryButton label={isOnline ? "Submit Now" : "Queue Payment"} onPress={onSubmit} loading={mutation.isPending} />
+            </View>
           </View>
         </View>
       ) : null}
@@ -454,8 +462,11 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   actionRow: {
-    flexDirection: "row",
+    flexDirection: "column",
     gap: 10
+  },
+  actionButtonWrap: {
+    width: "100%"
   },
   reviewCard: {
     backgroundColor: "#F8FAFC",
