@@ -7,7 +7,6 @@ const nextConfig = {
 
   // Experimental features (use carefully in production)
   experimental: {
-    serverActions: true, // App Router server actions
     optimizePackageImports: ['lucide-react', '@mui/icons-material'],
   },
 
@@ -65,15 +64,7 @@ const nextConfig = {
     ];
   },
 
-  // Rewrites (API proxy pattern)
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
-      },
-    ];
-  },
+  
 
   // Webpack customization (only when necessary)
   webpack: (config, { isServer }) => {
