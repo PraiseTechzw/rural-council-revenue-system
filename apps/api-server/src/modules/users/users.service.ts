@@ -138,7 +138,7 @@ export async function createUser(input: { firstName: string; lastName: string; e
 		entityId: created.id,
 		metadata: {
 			email: created.email,
-			roleName: created.roleName
+			roleName: input.roleName
 		},
 		ipAddress: null
 	});
