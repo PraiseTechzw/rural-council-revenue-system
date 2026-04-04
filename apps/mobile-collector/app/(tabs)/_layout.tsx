@@ -23,6 +23,7 @@ export default function TabsLayout() {
     <Tabs
       initialRouteName="dashboard"
       screenOptions={{
+        headerShown: false,
         headerTitleStyle: { color: colors.textPrimary },
         headerStyle: { backgroundColor: colors.background },
         tabBarActiveTintColor: colors.primary,
