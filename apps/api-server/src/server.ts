@@ -3,8 +3,8 @@ import { env } from "./config/env";
 import { logger } from "./config/logger";
 import { closeDatabaseConnection } from "./db";
 
-const server = app.listen(env.PORT, () => {
-  logger.info(`API server listening on port ${env.PORT}`);
+const server = app.listen(env.PORT, env.HOST, () => {
+  logger.info(`API server listening on ${env.HOST}:${env.PORT}`);
 });
 
 async function shutdown(signal: string) {

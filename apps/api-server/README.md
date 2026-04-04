@@ -14,6 +14,7 @@ Node.js + Express + TypeScript API for the Rural Council Revenue Collection and 
 ## Environment Variables
 
 - `NODE_ENV`
+- `HOST`
 - `PORT`
 - `DATABASE_URL`
 - `JWT_SECRET`
