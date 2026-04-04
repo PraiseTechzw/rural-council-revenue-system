@@ -130,7 +130,8 @@ export default function UsersPage() {
               className="space-y-3"
               onSubmit={async (event) => {
                 event.preventDefault();
-                const formData = new FormData(event.currentTarget);
+                const form = event.currentTarget as HTMLFormElement;
+                const formData = new FormData(form);
                 await createMutation.mutateAsync({
                   firstName: String(formData.get("firstName") ?? ""),
                   lastName: String(formData.get("lastName") ?? ""),
@@ -139,7 +140,7 @@ export default function UsersPage() {
                   password: String(formData.get("password") ?? ""),
                   roleName: String(formData.get("roleName") ?? "collector") as "admin" | "finance_officer" | "collector"
                 });
-                (event.currentTarget as HTMLFormElement).reset();
+                form.reset();
               }}
             >
               <input name="firstName" className="premium-input" placeholder="First name" required />
