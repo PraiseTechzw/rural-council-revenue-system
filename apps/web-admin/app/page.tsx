@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function HomePage() {
-  return <main>Web Admin Home Placeholder</main>;
+  redirect("/dashboard");
 }
