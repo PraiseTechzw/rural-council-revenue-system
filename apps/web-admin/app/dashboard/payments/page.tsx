@@ -186,7 +186,7 @@ export default function PaymentsPage() {
         </div>
 
         <aside className="premium-panel-strong p-4">
-          <h2 className="text-base font-semibold text-slate-900">Payment Detail</h2>
+          <h2 className="text-base font-semibold text-emerald-50">Payment Detail</h2>
           {!selectedPaymentId ? (
             <p className="mt-3 text-sm text-emerald-100/80">Select a payment row to view details.</p>
           ) : paymentDetailQuery.isLoading ? (

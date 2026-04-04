@@ -23,8 +23,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   if (isLoadingAuth) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-100">
-        <p className="text-sm text-slate-600">Loading dashboard...</p>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="premium-panel px-8 py-6 text-center">
+          <p className="premium-kicker">Initializing</p>
+          <p className="mt-2 text-sm font-medium text-slate-700">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
