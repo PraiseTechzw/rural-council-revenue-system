@@ -8,6 +8,7 @@ import { AppScreen } from "../../src/components/app-screen";
 import { FormInput } from "../../src/components/form-input";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { colors } from "../../src/constants/colors";
+import { appConfig } from "../../src/constants/config";
 import { collectorLoginSchema, type CollectorLoginInput } from "../../src/features/auth";
 import { useAuth } from "../../src/hooks/useAuth";
 import { useNetworkStatus } from "../../src/hooks/useNetworkStatus";
@@ -47,6 +48,7 @@ export default function LoginScreen() {
         <Text style={[styles.connection, { color: isConnected && isInternetReachable ? colors.success : colors.warning }]}> 
           {isConnected && isInternetReachable ? "Connected to server" : "Offline mode: login requires internet"}
         </Text>
+        <Text style={styles.endpoint}>API: {appConfig.apiBaseUrl}</Text>
       </View>
 
       <Controller
@@ -106,6 +108,10 @@ const styles = StyleSheet.create({
   },
   connection: {
     fontWeight: "700"
+  },
+  endpoint: {
+    color: colors.textSecondary,
+    fontSize: 12
   },
   errorBanner: {
     backgroundColor: "#FEE2E2",
