@@ -26,12 +26,21 @@ export default function TransactionsScreen() {
 
   return (
     <AppScreen>
-      <TextInput
-        value={query}
-        onChangeText={setQuery}
-        placeholder="Search payer or revenue source"
-        style={styles.search}
-      />
+      <View style={styles.hero}>
+        <Text style={styles.kicker}>Records</Text>
+        <Text style={styles.title}>Transactions</Text>
+        <Text style={styles.subtitle}>Search payments and inspect sync status in one place.</Text>
+      </View>
+
+      <View style={styles.searchWrap}>
+        <TextInput
+          value={query}
+          onChangeText={setQuery}
+          placeholder="Search payer or revenue source"
+          placeholderTextColor="#94A3B8"
+          style={styles.search}
+        />
+      </View>
 
       <View style={styles.filterRow}>
         {(["all", "pending", "synced", "failed"] as const).map((item) => (
@@ -71,12 +80,41 @@ export default function TransactionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  search: {
+  hero: {
     backgroundColor: colors.surface,
-    borderColor: colors.border,
+    borderRadius: 20,
     borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
+    borderColor: colors.border,
+    padding: 16,
+    gap: 6
+  },
+  kicker: {
+    color: colors.primary,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    fontSize: 11,
+    fontWeight: "700"
+  },
+  title: {
+    color: colors.textPrimary,
+    fontSize: 24,
+    fontWeight: "700"
+  },
+  subtitle: {
+    color: colors.textSecondary,
+    lineHeight: 20
+  },
+  searchWrap: {
+    backgroundColor: colors.surface,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 4
+  },
+  search: {
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
     color: colors.textPrimary
   },
   filterRow: {
@@ -85,8 +123,8 @@ const styles = StyleSheet.create({
     gap: 8
   },
   filterPill: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: colors.border,
@@ -105,7 +143,7 @@ const styles = StyleSheet.create({
     color: "#fff"
   },
   emptyBox: {
-    borderRadius: 12,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
@@ -116,11 +154,11 @@ const styles = StyleSheet.create({
   },
   row: {
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.border,
-    padding: 12,
-    gap: 4
+    padding: 14,
+    gap: 6
   },
   rowTop: {
     flexDirection: "row",
