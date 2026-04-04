@@ -4,12 +4,114 @@
 
 :root {
   color-scheme: light;
+  --bg: #f4f3ef;
+  --bg-elevated: #fbfaf7;
+  --ink: #1f2937;
+  --ink-soft: #4b5563;
+  --line: #ddd7cd;
+  --card-line: #e8e2d8;
+  --brand: #2b4d34;
+  --brand-strong: #1f3b27;
+  --brand-tint: #e7f0e8;
+  --accent: #c2904c;
 }
 
 body {
-  @apply bg-slate-100 text-slate-900 antialiased;
+  font-family: var(--font-body), sans-serif;
+  background:
+    radial-gradient(circle at 12% 12%, rgb(43 77 52 / 12%), transparent 30%),
+    radial-gradient(circle at 88% 0%, rgb(194 144 76 / 10%), transparent 24%),
+    linear-gradient(180deg, #f9f7f2 0%, #f0ede6 100%);
+  color: var(--ink);
+  @apply antialiased;
 }
 
 a {
-  @apply text-brand-700 hover:text-brand-800;
+  color: var(--brand);
+}
+
+@layer components {
+  .dashboard-page {
+    @apply space-y-6;
+  }
+
+  .dashboard-title {
+    font-family: var(--font-display), sans-serif;
+    @apply text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl;
+  }
+
+  .dashboard-subtitle {
+    @apply mt-1 text-sm text-slate-600;
+  }
+
+  .premium-panel {
+    background: linear-gradient(160deg, rgb(251 250 247 / 96%), rgb(246 242 234 / 94%));
+    border: 1px solid var(--card-line);
+    box-shadow: 0 12px 28px rgb(31 41 55 / 8%);
+    @apply rounded-2xl;
+  }
+
+  .premium-panel-strong {
+    background: linear-gradient(145deg, rgb(39 64 45 / 98%), rgb(26 43 31 / 96%));
+    border: 1px solid rgb(255 255 255 / 14%);
+    box-shadow: 0 14px 34px rgb(19 27 21 / 35%);
+    @apply rounded-2xl text-emerald-50;
+  }
+
+  .premium-table-wrap {
+    @apply overflow-x-auto rounded-xl border border-[#e7dece] bg-[#fbf8f2];
+  }
+
+  .premium-table {
+    @apply min-w-full text-sm;
+  }
+
+  .premium-table thead {
+    @apply bg-[#f1eadc] text-left text-slate-700;
+  }
+
+  .premium-table th {
+    @apply px-3 py-2 font-medium;
+  }
+
+  .premium-table td {
+    @apply px-3 py-2 text-slate-700;
+  }
+
+  .premium-input {
+    @apply w-full rounded-xl border border-[#d8cfbe] bg-[#fffdf8] px-3 py-2 text-sm text-slate-800 outline-none transition;
+  }
+
+  .premium-input:focus {
+    border-color: rgb(43 77 52 / 65%);
+    box-shadow: 0 0 0 3px rgb(43 77 52 / 12%);
+  }
+
+  .premium-button {
+    background: linear-gradient(135deg, #355e3f 0%, #24442f 100%);
+    @apply rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:brightness-110 disabled:opacity-50;
+  }
+
+  .premium-button-outline {
+    @apply rounded-xl border border-[#c6b79f] bg-[#faf5eb] px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-[#f4ebdc] disabled:opacity-50;
+  }
+
+  .premium-kicker {
+    @apply text-[11px] uppercase tracking-[0.18em] text-slate-500;
+  }
+
+  .reveal {
+    animation: reveal-up 0.5s ease-out both;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
