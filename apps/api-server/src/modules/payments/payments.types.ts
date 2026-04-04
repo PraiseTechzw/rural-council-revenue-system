@@ -3,9 +3,11 @@ export type PaymentStatus = "pending" | "posted" | "voided" | "reversed";
 export type SyncStatus = "pending" | "synced" | "failed" | "duplicate";
 
 export type CreatePaymentInput = {
-	payerId: string;
-	collectorId: string;
-	revenueSourceId: string;
+	payerId?: string;
+	payerName?: string;
+	collectorId?: string;
+	revenueSourceId?: string;
+	revenueSourceCategory?: string;
 	wardId?: string | null;
 	amount: number;
 	currency?: string;
