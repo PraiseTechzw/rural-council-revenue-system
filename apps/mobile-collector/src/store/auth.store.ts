@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthState>()(
 					const response = await authApi.login(payload);
 
 					await saveAccessToken(response.accessToken);
-					const user = response.user ?? (await authApi.me());
+					const user = await authApi.me();
 					assertCollectorAccess(user);
 
 					set({
