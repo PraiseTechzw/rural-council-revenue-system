@@ -1,30 +1,67 @@
 import { apiClient } from "./client";
 import type { CollectorUser, LoginPayload, LoginResponse } from "../types/auth.types";
 
-type MeResponse = {
-	user?: CollectorUser;
-} & Partial<CollectorUser>;
+type BackendAuthUser = {
+	id: string;
+	firstName?: string;
+	lastName?: string;
+	email?: string;
+	role?: string;
+};
+
+type ApiEnvelope<T> = {
+	success: boolean;
+	message: string;
+	data?: T;
+};
+
+type LoginData = {
+	user?: BackendAuthUser;
+	tokens?: {
+		accessToken?: string;
+	};
+};
+
+type MeData = BackendAuthUser;
+
+function mapUser(user?: BackendAuthUser): CollectorUser | undefined {
+	if (!user) {
+		return undefined;
+	}
+
+	const fullName = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+
+	return {
+		id: user.id,
+		name: fullName || "Collector",
+		email: user.email,
+		role: user.role ?? "collector"
+	};
+}
 
 export const authApi = {
 	async login(payload: LoginPayload): Promise<LoginResponse> {
-		const response = await apiClient.post<LoginResponse>("/auth/login", payload);
-		return response.data;
-	},
+		const response = await apiClient.post<ApiEnvelope<LoginData>>("/auth/login", payload);
+		const accessToken = response.data?.data?.tokens?.accessToken;
 
-	async me(): Promise<CollectorUser> {
-		const response = await apiClient.get<MeResponse>("/auth/me");
-		const data = response.data;
-
-		if (data.user) {
-			return data.user;
+		if (!accessToken || typeof accessToken !== "string") {
+			throw new Error("Login response missing access token.");
 		}
 
 		return {
-			id: data.id ?? "unknown",
-			name: data.name ?? "Collector",
-			email: data.email,
-			role: data.role ?? "collector",
-			assignedWard: data.assignedWard
+			accessToken,
+			user: mapUser(response.data?.data?.user)
 		};
+	},
+
+	async me(): Promise<CollectorUser> {
+		const response = await apiClient.get<ApiEnvelope<MeData>>("/auth/me");
+		const user = mapUser(response.data?.data);
+
+		if (!user) {
+			throw new Error("Invalid profile response from server.");
+		}
+
+		return user;
 	}
 };
