@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { getPaymentById, listPayments } from "@/api/payments.api";
 import { formatCurrency, formatDateTime } from "@/lib/format";
 
@@ -59,6 +60,11 @@ export default function PaymentsPage() {
       <header>
         <h1 className="dashboard-title">Payments Ledger</h1>
         <p className="dashboard-subtitle">Track transaction activity, validate references, and inspect individual payment records.</p>
+        <div className="mt-4">
+          <Link href="/dashboard/payments/new" className="premium-button inline-flex">
+            Collect Payment
+          </Link>
+        </div>
       </header>
 
       <div className="premium-panel grid gap-3 p-4 md:grid-cols-4">
