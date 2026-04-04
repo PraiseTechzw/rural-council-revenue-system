@@ -42,6 +42,21 @@ function buildUserSelect() {
 	};
 }
 
+function buildUserReturningSelect() {
+	return {
+		id: users.id,
+		roleId: users.roleId,
+		firstName: users.firstName,
+		lastName: users.lastName,
+		email: users.email,
+		phoneNumber: users.phoneNumber,
+		isActive: users.isActive,
+		lastLoginAt: users.lastLoginAt,
+		createdAt: users.createdAt,
+		updatedAt: users.updatedAt
+	};
+}
+
 export async function listUsers(query: ListUsersQuery) {
 	const { page, limit, offset } = parsePagination(query);
 	const conditions = [] as ReturnType<typeof eq>[];
@@ -114,7 +129,7 @@ export async function createUser(input: { firstName: string; lastName: string; e
 			passwordHash,
 			isActive: true
 		})
-		.returning(buildUserSelect());
+		.returning(buildUserReturningSelect());
 
 	await db.insert(auditLogs).values({
 		userId: actorId ?? created.id,
@@ -128,7 +143,7 @@ export async function createUser(input: { firstName: string; lastName: string; e
 		ipAddress: null
 	});
 
-	return created;
+	return getUserById(created.id);
 }
 
 export async function updateUser(id: string, input: { firstName?: string; lastName?: string; email?: string; phoneNumber?: string | null; isActive?: boolean; roleName?: string }, actorId?: string | null) {
@@ -143,7 +158,11 @@ export async function updateUser(id: string, input: { firstName?: string; lastNa
 	if (input.isActive !== undefined) updateData.isActive = input.isActive;
 	if (input.roleName !== undefined) updateData.roleId = await resolveRoleId(input.roleName);
 
-	const [updated] = await db.update(users).set(updateData).where(eq(users.id, id)).returning(buildUserSelect());
+	const [updated] = await db.update(users).set(updateData).where(eq(users.id, id)).returning({ id: users.id });
+
+	if (!updated) {
+		throw new AppError("User not found", 404, "USER_NOT_FOUND");
+	}
 
 	await db.insert(auditLogs).values({
 		userId: actorId ?? id,
@@ -154,5 +173,5 @@ export async function updateUser(id: string, input: { firstName?: string; lastNa
 		ipAddress: null
 	});
 
-	return updated;
+	return getUserById(updated.id);
 }
