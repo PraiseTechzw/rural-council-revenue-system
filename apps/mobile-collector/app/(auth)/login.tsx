@@ -10,10 +10,12 @@ import { PrimaryButton } from "../../src/components/primary-button";
 import { colors } from "../../src/constants/colors";
 import { collectorLoginSchema, type CollectorLoginInput } from "../../src/features/auth";
 import { useAuth } from "../../src/hooks/useAuth";
+import { useNetworkStatus } from "../../src/hooks/useNetworkStatus";
 import { getErrorMessage } from "../../src/utils/error";
 
 export default function LoginScreen() {
   const { login, setError, errorMessage } = useAuth();
+  const { isConnected, isInternetReachable } = useNetworkStatus();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { control, handleSubmit, formState } = useForm<CollectorLoginInput>({
@@ -42,6 +44,9 @@ export default function LoginScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Collector Sign In</Text>
         <Text style={styles.subtitle}>Rural District Council Revenue Collection</Text>
+        <Text style={[styles.connection, { color: isConnected && isInternetReachable ? colors.success : colors.warning }]}> 
+          {isConnected && isInternetReachable ? "Connected to server" : "Offline mode: login requires internet"}
+        </Text>
       </View>
 
       <Controller
@@ -98,6 +103,9 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: colors.textSecondary
+  },
+  connection: {
+    fontWeight: "700"
   },
   errorBanner: {
     backgroundColor: "#FEE2E2",

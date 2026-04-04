@@ -1,5 +1,5 @@
 import { PropsWithChildren, useEffect } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import { queryClient } from "../lib/query-client";
@@ -26,6 +26,8 @@ function AuthHydrationGate({ children }: PropsWithChildren) {
     return (
       <View style={styles.loaderWrap}>
         <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loaderTitle}>Checking your session</Text>
+        <Text style={styles.loaderText}>Please wait while the app verifies your account.</Text>
       </View>
     );
   }
@@ -49,6 +51,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
+    paddingHorizontal: 24,
+    gap: 8
+  },
+  loaderTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.textPrimary,
+    marginTop: 8
+  },
+  loaderText: {
+    color: colors.textSecondary,
+    textAlign: "center"
   }
 });
