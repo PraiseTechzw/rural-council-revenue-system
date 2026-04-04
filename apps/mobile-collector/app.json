@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "mobile-collector",
+    "slug": "mobile-collector",
+    "version": "1.0.0",
+    "scheme": "mobilecollector",
+    "orientation": "portrait",
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

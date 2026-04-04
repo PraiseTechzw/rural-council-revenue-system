@@ -1,0 +1,29 @@
+{
+  "name": "@apps/mobile-collector",
+  "private": true,
+  "version": "0.1.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "dev": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "build": "echo \"mobile build pipeline setup pending\"",
+    "lint": "echo \"lint setup pending\"",
+    "format": "echo \"format setup pending\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.62.7",
+    "axios": "^1.7.7",
+    "expo": "^51.0.0",
+    "expo-router": "^3.5.23",
+    "react": "^18.2.0",
+    "react-native": "^0.74.5",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "typescript": "^5.6.3"
+  }
+}

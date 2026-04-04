@@ -1,0 +1,12 @@
+{
+  "name": "@packages/eslint-config",
+  "private": true,
+  "version": "0.1.0",
+  "main": "base.cjs",
+  "scripts": {
+    "build": "echo \"no build step required\"",
+    "dev": "echo \"no dev step required\"",
+    "lint": "echo \"lint not configured yet\"",
+    "format": "echo \"format not configured yet\""
+  }
+}
