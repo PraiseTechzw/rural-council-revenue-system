@@ -14,6 +14,7 @@ export default function TabsLayout() {
     <Tabs
       initialRouteName="dashboard"
       screenOptions={{
+        tabBarIcon: {},
         headerTitleStyle: { color: colors.textPrimary },
         tabBarActiveTintColor: colors.primary,
         tabBarLabelStyle: { fontSize: 12 },
