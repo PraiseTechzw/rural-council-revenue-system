@@ -98,7 +98,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="premium-panel-strong p-4">
-          <h2 className="text-base font-semibold text-slate-900">Quick Links</h2>
+          <h2 className="text-base font-semibold text-emerald-50">Quick Links</h2>
           <div className="mt-3 space-y-2">
             <Link href="/dashboard/payments" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
               View payments
