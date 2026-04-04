@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { navigationItems } from "@/constants/navigation";
+import { getDashboardRoleSummary, getNavigationItemsForRole } from "@/constants/navigation";
 import { useAuth } from "@/components/providers/auth-provider";
-import { hasRole } from "@/lib/guards";
 
 type DashboardShellProps = {
   children: ReactNode;
@@ -16,7 +15,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
   const router = useRouter();
   const { user, logout } = useAuth();
 
-  const visibleNavigation = navigationItems.filter((item) => hasRole(user?.role, item.roles));
+  const visibleNavigation = getNavigationItemsForRole(user?.role);
+  const roleSummary = getDashboardRoleSummary(user?.role);
 
   return (
     <div className="min-h-screen text-slate-900">
@@ -24,8 +24,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
         <aside className="hidden w-72 premium-panel-strong p-5 lg:block">
           <div className="mb-8 border-b border-white/15 pb-5">
             <p className="premium-kicker text-emerald-100/70">Rural Council</p>
-            <h1 className="mt-2 text-xl font-semibold tracking-tight text-white">Revenue Command</h1>
-            <p className="mt-1 text-sm text-emerald-100/80">Administrative dashboard</p>
+            <h1 className="mt-2 text-xl font-semibold tracking-tight text-white">{roleSummary.title}</h1>
+            <p className="mt-1 text-sm text-emerald-100/80">{roleSummary.subtitle}</p>
           </div>
 
           <nav className="space-y-1.5">
@@ -55,6 +55,9 @@ export function DashboardShell({ children }: DashboardShellProps) {
                 <p className="premium-kicker">Signed In As</p>
                 <p className="text-sm font-semibold text-slate-900">
                   {user ? `${user.firstName} ${user.lastName}` : "Unknown user"}
+                </p>
+                <p className="mt-1 inline-flex rounded-full bg-[#eef5e8] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2a4a38]">
+                  {roleSummary.badge}
                 </p>
               </div>
               <button

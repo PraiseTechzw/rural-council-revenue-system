@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { useAuth } from "@/components/providers/auth-provider";
+import { canAccessDashboardPath } from "@/constants/navigation";
+import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { isLoadingAuth, isAuthenticated, user } = useAuth();
 
   useEffect(() => {
@@ -18,8 +21,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     if (!isLoadingAuth && user && !(user.role === "admin" || user.role === "finance_officer")) {
       router.replace("/login");
+      return;
     }
-  }, [isAuthenticated, isLoadingAuth, router, user]);
+
+    if (!isLoadingAuth && user && pathname && !canAccessDashboardPath(user.role, pathname)) {
+      router.replace("/dashboard");
+    }
+  }, [isAuthenticated, isLoadingAuth, pathname, router, user]);
 
   if (isLoadingAuth) {
     return (

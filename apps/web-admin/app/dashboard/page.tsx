@@ -4,9 +4,15 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getDailyReport, getMonthlyReport, getRevenueBySource } from "@/api/reports.api";
 import { listCollectors } from "@/api/collectors.api";
+import { getDashboardRoleSummary, getNavigationItemsForRole } from "@/constants/navigation";
 import { formatCurrency } from "@/lib/format";
+import { useAuth } from "@/components/providers/auth-provider";
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const roleSummary = getDashboardRoleSummary(user?.role);
+  const roleNavigation = getNavigationItemsForRole(user?.role).filter((item) => item.href !== "/dashboard");
+
   const dailyQuery = useQuery({
     queryKey: ["dashboard", "daily"],
     queryFn: () => getDailyReport({})
@@ -35,9 +41,17 @@ export default function DashboardPage() {
 
   return (
     <section className="dashboard-page reveal">
-      <header>
-        <h1 className="dashboard-title">Revenue Intelligence Desk</h1>
-        <p className="dashboard-subtitle">Live overview of council collections, daily flow, and operational momentum.</p>
+      <header className="premium-panel p-4">
+        <p className="premium-kicker">{roleSummary.badge}</p>
+        <h1 className="dashboard-title mt-2">{roleSummary.title}</h1>
+        <p className="dashboard-subtitle">{roleSummary.subtitle}</p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {roleSummary.capabilities.map((capability) => (
+            <span key={capability} className="rounded-full border border-[#d9cdb8] bg-[#fbf7ef] px-3 py-1 text-xs font-semibold text-slate-700">
+              {capability}
+            </span>
+          ))}
+        </div>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -100,18 +114,11 @@ export default function DashboardPage() {
         <section className="premium-panel-strong p-4">
           <h2 className="text-base font-semibold text-emerald-50">Quick Links</h2>
           <div className="mt-3 space-y-2">
-            <Link href="/dashboard/payments" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
-              View payments
-            </Link>
-            <Link href="/dashboard/receipts" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
-              Lookup receipt
-            </Link>
-            <Link href="/dashboard/reports" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
-              Open reports
-            </Link>
-            <Link href="/dashboard/collectors" className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
-              Manage collectors
-            </Link>
+            {roleNavigation.map((item) => (
+              <Link key={item.href} href={item.href} className="block rounded-xl border border-white/20 bg-white/10 px-3 py-2 text-sm text-emerald-50 transition hover:bg-white/20">
+                {item.label}
+              </Link>
+            ))}
           </div>
         </section>
       </div>
