@@ -1,9 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, listUsers, updateUser } from "@/api/users.api";
 import { formatDateTime } from "@/lib/format";
+
+type ToastState = {
+  type: "success" | "error";
+  message: string;
+};
 
 export default function UsersPage() {
   const queryClient = useQueryClient();
@@ -11,6 +16,19 @@ export default function UsersPage() {
   const [roleFilter, setRoleFilter] = useState<"" | "admin" | "finance_officer" | "collector">("");
   const [statusFilter, setStatusFilter] = useState<"" | "true" | "false">("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
+
+  useEffect(() => {
+    if (!toast) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 3500);
+
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const params = useMemo(
     () => ({
@@ -34,6 +52,13 @@ export default function UsersPage() {
     mutationFn: createUser,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
+      setToast({ type: "success", message: "User created successfully." });
+    },
+    onError: (error) => {
+      setToast({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to create user."
+      });
     }
   });
 
@@ -41,11 +66,41 @@ export default function UsersPage() {
     mutationFn: ({ id, payload }: { id: string; payload: Parameters<typeof updateUser>[1] }) => updateUser(id, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["users"] });
+      setToast({ type: "success", message: "User updated successfully." });
+    },
+    onError: (error) => {
+      setToast({
+        type: "error",
+        message: error instanceof Error ? error.message : "Failed to update user."
+      });
     }
   });
 
   return (
     <section className="dashboard-page reveal">
+      {toast ? (
+        <div className="fixed right-4 top-4 z-50 max-w-sm">
+          <div
+            className={`rounded-xl border px-4 py-3 text-sm shadow-lg ${
+              toast.type === "success"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                : "border-rose-200 bg-rose-50 text-rose-800"
+            }`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <p>{toast.message}</p>
+              <button
+                type="button"
+                onClick={() => setToast(null)}
+                className="text-xs font-semibold uppercase tracking-wide opacity-70 transition hover:opacity-100"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <header>
         <h1 className="dashboard-title">Users Management</h1>
         <p className="dashboard-subtitle">Create admin, finance, and collector users, then maintain role and access status.</p>
