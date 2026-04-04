@@ -65,6 +65,14 @@ export const requireAuth: RequestHandler = async (req, _res, next) => {
 
 		return next();
 	} catch (error) {
+		if (error instanceof jwt.TokenExpiredError) {
+			return next(new AppError("Session expired. Please sign in again.", 401, "TOKEN_EXPIRED"));
+		}
+
+		if (error instanceof jwt.JsonWebTokenError || error instanceof jwt.NotBeforeError) {
+			return next(new AppError("Invalid authentication token", 401, "UNAUTHORIZED"));
+		}
+
 		return next(error instanceof Error ? error : new AppError("Authentication failed", 401, "UNAUTHORIZED"));
 	}
 };
