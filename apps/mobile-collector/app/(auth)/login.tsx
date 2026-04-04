@@ -42,15 +42,22 @@ export default function LoginScreen() {
 
   return (
     <AppScreen>
-      <View style={styles.header}>
+      <View style={styles.heroCard}>
+        <View style={styles.heroBadge}>
+          <Text style={styles.heroBadgeText}>Field Collector App</Text>
+        </View>
         <Text style={styles.title}>Collector Sign In</Text>
         <Text style={styles.subtitle}>Rural District Council Revenue Collection</Text>
-        <Text style={[styles.connection, { color: isConnected && isInternetReachable ? colors.success : colors.warning }]}> 
-          {isConnected && isInternetReachable ? "Connected to server" : "Offline mode: login requires internet"}
-        </Text>
+        <View style={styles.connectionRow}>
+          <View style={[styles.connectionDot, { backgroundColor: isConnected && isInternetReachable ? colors.success : colors.warning }]} />
+          <Text style={[styles.connection, { color: isConnected && isInternetReachable ? colors.success : colors.warning }]}> 
+            {isConnected && isInternetReachable ? "Connected to server" : "Offline mode: login requires internet"}
+          </Text>
+        </View>
         <Text style={styles.endpoint}>API: {appConfig.apiBaseUrl}</Text>
       </View>
 
+      <View style={styles.formCard}>
       <Controller
         control={control}
         name="email"
@@ -88,42 +95,86 @@ export default function LoginScreen() {
       <Link href="/(auth)/forgot-password" style={styles.forgotLink}>
         Forgot password?
       </Link>
+      </View>
     </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    marginTop: 20,
-    marginBottom: 12,
-    gap: 4
+  heroCard: {
+    backgroundColor: colors.primary,
+    borderRadius: 24,
+    padding: 20,
+    gap: 6,
+    shadowColor: colors.primary,
+    shadowOpacity: 0.22,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 4
+  },
+  heroBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "rgba(255,255,255,0.16)",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 999
+  },
+  heroBadgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.4,
+    textTransform: "uppercase"
   },
   title: {
     fontSize: 28,
     fontWeight: "700",
-    color: colors.textPrimary
+    color: "#fff"
   },
   subtitle: {
-    color: colors.textSecondary
+    color: "#D9FFF6"
+  },
+  formCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 18,
+    gap: 14,
+    shadowColor: "#0F172A",
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 2
+  },
+  connectionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8
+  },
+  connectionDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 999
   },
   connection: {
     fontWeight: "700"
   },
   endpoint: {
-    color: colors.textSecondary,
+    color: "#E9FDF9",
     fontSize: 12
   },
   errorBanner: {
     backgroundColor: "#FEE2E2",
     color: colors.danger,
     borderRadius: 10,
-    padding: 10,
+    padding: 12,
     fontWeight: "600"
   },
   forgotLink: {
     color: colors.info,
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 4,
     fontWeight: "600"
   }
 });

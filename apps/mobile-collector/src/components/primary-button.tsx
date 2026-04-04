@@ -18,7 +18,16 @@ export function PrimaryButton({ label, onPress, disabled, loading, variant = "pr
   }[variant];
 
   return (
-    <Pressable onPress={onPress} disabled={disabled || loading} style={[styles.base, styleByVariant, disabled && styles.disabled]}>
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || loading}
+      style={({ pressed }) => [
+        styles.base,
+        styleByVariant,
+        pressed && !disabled && !loading && styles.pressed,
+        (disabled || loading) && styles.disabled
+      ]}
+    >
       {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.label}>{label}</Text>}
     </Pressable>
   );
@@ -26,9 +35,14 @@ export function PrimaryButton({ label, onPress, disabled, loading, variant = "pr
 
 const styles = StyleSheet.create({
   base: {
+    minHeight: 52,
     borderRadius: 10,
     paddingVertical: spacing.md,
     alignItems: "center"
+  },
+  pressed: {
+    transform: [{ scale: 0.985 }],
+    opacity: 0.92
   },
   label: {
     color: "#fff",

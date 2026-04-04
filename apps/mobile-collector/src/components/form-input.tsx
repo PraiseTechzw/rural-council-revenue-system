@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import { colors, spacing } from "../constants/colors";
@@ -23,17 +24,22 @@ export function FormInput({
   keyboardType,
   secureTextEntry
 }: FormInputProps) {
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <View style={styles.wrap}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={[styles.input, multiline && styles.multiline, Boolean(error) && styles.errorInput]}
+        style={[styles.input, multiline && styles.multiline, isFocused && styles.focused, Boolean(error) && styles.errorInput]}
         placeholder={placeholder}
         value={value}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
         multiline={multiline}
         secureTextEntry={secureTextEntry}
+        placeholderTextColor="#94A3B8"
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
@@ -54,8 +60,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingVertical: spacing.md,
     color: colors.textPrimary
+  },
+  focused: {
+    borderColor: colors.primary,
+    backgroundColor: "#FCFEFD",
+    shadowColor: colors.primary,
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2
   },
   multiline: {
     minHeight: 90,
