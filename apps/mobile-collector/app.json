@@ -7,11 +7,7 @@
     "orientation": "portrait",
     "plugins": ["expo-router", "expo-secure-store"],
     "android": {
-      "package": "zw.ruralcouncil.collector",
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+      "package": "zw.ruralcouncil.collector"
     },
     "extra": {
       "eas": {

@@ -6,7 +6,12 @@ import { useNetworkStatus } from "./useNetworkStatus";
 import { useOfflineQueue } from "./useOfflineQueue";
 import { useSyncStore } from "../store/sync.store";
 
-export function useSync() {
+type UseSyncOptions = {
+	enabled?: boolean;
+};
+
+export function useSync(options?: UseSyncOptions) {
+	const enabled = options?.enabled ?? true;
 	const { isConnected, isInternetReachable } = useNetworkStatus();
 	const isOnline = isConnected && isInternetReachable;
 	const { pendingPayments, markSynced, markFailed } = useOfflineQueue();
@@ -17,6 +22,7 @@ export function useSync() {
 	const setLastSyncAt = useSyncStore((state) => state.setLastSyncAt);
 	const setLastError = useSyncStore((state) => state.setLastError);
 	const setFailedItems = useSyncStore((state) => state.setFailedItems);
+	const lastAutoAttemptKeyRef = useRef<string>("");
 
 	useEffect(() => {
 		setPendingCount(pendingPayments.length);
@@ -24,7 +30,7 @@ export function useSync() {
 
 	const mutation = useMutation({
 		mutationFn: async () => {
-			if (!isOnline) {
+			if (!enabled || !isOnline) {
 				throw new Error("No internet connection. Connect and retry.");
 			}
 
@@ -33,8 +39,6 @@ export function useSync() {
 				onSynced: markSynced,
 				onFailed: markFailed
 			});
-
-			const lastAutoAttemptKeyRef = useRef<string>("");
 		},
 		onMutate: () => {
 			setSyncing(true);
@@ -57,18 +61,19 @@ export function useSync() {
 	});
 
 	const syncNow = useCallback(async () => {
-		if (isSyncing || mutation.isPending || pendingPayments.length === 0 || !isOnline) {
+		if (!enabled || isSyncing || mutation.isPending || pendingPayments.length === 0 || !isOnline) {
 			return;
 		}
 
 		await mutation.mutateAsync();
-	}, [isOnline, isSyncing, mutation, pendingPayments]);
+	}, [enabled, isOnline, isSyncing, mutation, pendingPayments.length]);
 
 	useEffect(() => {
 		const pendingKey = pendingPayments.map((item) => `${item.localId}:${item.syncStatus}`).join("|");
-		const autoAttemptKey = `${isOnline}-${pendingKey}`;
+		const autoAttemptKey = `${enabled}-${isOnline}-${pendingKey}`;
 
 		if (
+			enabled &&
 			isOnline &&
 			pendingPayments.length > 0 &&
 			!isSyncing &&
@@ -78,7 +83,7 @@ export function useSync() {
 			lastAutoAttemptKeyRef.current = autoAttemptKey;
 			mutation.mutate();
 		}
-	}, [isOnline, isSyncing, mutation, pendingPayments.length]);
+	}, [enabled, isOnline, isSyncing, mutation, pendingPayments]);
 
 	return {
 		syncNow,

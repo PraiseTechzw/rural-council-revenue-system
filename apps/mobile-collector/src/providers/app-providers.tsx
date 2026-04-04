@@ -9,11 +9,7 @@ import { useSync } from "../hooks/useSync";
 
 function SyncBootstrap() {
   const status = useAuthStore((state) => state.status);
-  useSync();
-
-  if (status !== "authenticated") {
-    return null;
-  }
+  useSync({ enabled: status === "authenticated" });
 
   return null;
 }
