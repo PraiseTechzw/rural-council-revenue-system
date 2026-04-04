@@ -19,11 +19,6 @@
         "backgroundColor": "#ffffff"
       }
     },
-    "extra": {
-      "eas": {
-        "projectId": "rural-council-collector"
-      }
-    },
     "experiments": {
       "typedRoutes": true
     }
