@@ -38,7 +38,7 @@ export default function NewPaymentScreen() {
       revenueSource: "shop_rentals",
       amount: 0,
       paymentMethod: "cash",
-      paymentDate: new Date().toISOString(),
+      paymentDate: new Date().toISOString().slice(0, 10),
       notes: ""
     }
   });
@@ -58,7 +58,7 @@ export default function NewPaymentScreen() {
       notes: values.notes || undefined,
       payerReference: values.payerReference || undefined,
       collectorId: user?.id,
-      ward: user?.assignedWard,
+      wardId: user?.wardId,
       offlineReferenceId
     };
 

@@ -9,15 +9,15 @@ export const paymentSchema = z.object({
 	payerName: z.string().min(2, "Payer name is required"),
 	payerReference: z.string().optional(),
 	revenueSource: z.enum([
-		"shop_rentals",
-		"housing_stands",
-		"mining_fees",
-		"market_levies",
-		"other_council_charges"
+		"shop_rental",
+		"housing_stand",
+		"mining_fee",
+		"market_levy",
+		"other"
 	]),
 	amount: z.coerce.number().positive("Amount must be greater than zero"),
-	paymentMethod: z.enum(["cash", "mobile_money", "bank_transfer", "pos"]),
-	paymentDate: z.string().min(4, "Payment date is required"),
+	paymentMethod: z.enum(["cash", "mobile_money", "bank", "other"]),
+	paymentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Payment date must be YYYY-MM-DD"),
 	notes: z.string().max(500, "Notes are too long").optional()
 });
 

@@ -16,6 +16,132 @@ import { AppError } from "../../middleware/error.middleware";
 import type { AuthUser } from "../auth/auth.types";
 import type { CreatePaymentInput, DailySummaryFilterInput, PaymentFilterInput } from "./payments.types";
 
+function normalizePaymentMethod(paymentMethod: string): "cash" | "mobile_money" | "bank" | "other" {
+	switch (paymentMethod) {
+		case "bank_transfer":
+			return "bank";
+		case "pos":
+			return "other";
+		default:
+			return paymentMethod as "cash" | "mobile_money" | "bank" | "other";
+	}
+}
+
+function normalizePaymentDate(paymentDate: string) {
+	return paymentDate.includes("T") ? paymentDate.slice(0, 10) : paymentDate;
+}
+
+async function resolveCollector(input: CreatePaymentInput, actor: AuthUser) {
+	if (input.collectorId) {
+		const [collector] = await db
+			.select({
+				id: collectors.id,
+				userId: collectors.userId,
+				status: collectors.status,
+				wardId: collectors.wardId
+			})
+			.from(collectors)
+			.where(eq(collectors.id, input.collectorId))
+			.limit(1);
+
+		if (!collector) {
+			throw new AppError("Collector not found", 404, "COLLECTOR_NOT_FOUND");
+		}
+
+		return collector;
+	}
+
+	if (actor.role !== "collector") {
+		throw new AppError("Collector is required", 400, "COLLECTOR_REQUIRED");
+	}
+
+	const [collector] = await db
+		.select({
+			id: collectors.id,
+			userId: collectors.userId,
+			status: collectors.status,
+			wardId: collectors.wardId
+		})
+		.from(collectors)
+		.where(eq(collectors.userId, actor.id))
+		.limit(1);
+
+	if (!collector) {
+		throw new AppError("Collector profile not found", 404, "COLLECTOR_NOT_FOUND");
+	}
+
+	return collector;
+}
+
+async function resolvePayer(input: CreatePaymentInput, wardId: string | null) {
+	if (input.payerId) {
+		const [payer] = await db.select({ id: payers.id }).from(payers).where(eq(payers.id, input.payerId)).limit(1);
+
+		if (!payer) {
+			throw new AppError("Payer not found", 404, "PAYER_NOT_FOUND");
+		}
+
+		return payer;
+	}
+
+	if (!input.payerName) {
+		throw new AppError("Payer is required", 400, "PAYER_REQUIRED");
+	}
+
+	const payerName = input.payerName.trim();
+	const [existingPayer] = await db
+		.select({ id: payers.id })
+		.from(payers)
+		.where(eq(payers.fullName, payerName))
+		.limit(1);
+
+	if (existingPayer) {
+		return existingPayer;
+	}
+
+	const [payer] = await db
+		.insert(payers)
+		.values({
+			fullName: payerName,
+			wardId
+		})
+		.returning({ id: payers.id });
+
+	if (!payer) {
+		throw new AppError("Unable to create payer", 500, "PAYER_CREATE_FAILED");
+	}
+
+	return payer;
+}
+
+async function resolveRevenueSource(input: CreatePaymentInput) {
+	if (input.revenueSourceId) {
+		const [revenueSource] = await db.select({ id: revenueSources.id, name: revenueSources.name }).from(revenueSources).where(eq(revenueSources.id, input.revenueSourceId)).limit(1);
+
+		if (!revenueSource) {
+			throw new AppError("Revenue source not found", 404, "REVENUE_SOURCE_NOT_FOUND");
+		}
+
+		return revenueSource;
+	}
+
+	if (!input.revenueSourceCategory) {
+		throw new AppError("Revenue source is required", 400, "REVENUE_SOURCE_REQUIRED");
+	}
+
+	const [revenueSource] = await db
+		.select({ id: revenueSources.id, name: revenueSources.name })
+		.from(revenueSources)
+		.where(eq(revenueSources.category, input.revenueSourceCategory))
+		.limit(1);
+
+	if (!revenueSource) {
+		throw new AppError("Revenue source not found", 404, "REVENUE_SOURCE_NOT_FOUND");
+	}
+
+	return revenueSource;
+}
+
 type PaymentRecord = {
 	paymentId: string;
 	receiptId: string | null;
@@ -155,44 +281,47 @@ function normalizePaymentRecord(record: PaymentRecord) {
 }
 
 async function validateRelations(input: CreatePaymentInput, actor: AuthUser) {
-	const [payer] = await db.select({ id: payers.id }).from(payers).where(eq(payers.id, input.payerId)).limit(1);
-	const [revenueSource] = await db.select({ id: revenueSources.id }).from(revenueSources).where(eq(revenueSources.id, input.revenueSourceId)).limit(1);
-	const [collector] = await db
-		.select({
-			id: collectors.id,
-			userId: collectors.userId,
-			status: collectors.status
-		})
-		.from(collectors)
-		.where(eq(collectors.id, input.collectorId))
-		.limit(1);
-	const [ward] = input.wardId ? await db.select({ id: wards.id }).from(wards).where(eq(wards.id, input.wardId)).limit(1) : [null];
+	const collector = await resolveCollector(input, actor);
+	const wardId = input.wardId ?? collector.wardId ?? null;
+	const payer = await resolvePayer(input, wardId);
+	const revenueSource = await resolveRevenueSource(input);
+	const [ward] = wardId ? await db.select({ id: wards.id }).from(wards).where(eq(wards.id, wardId)).limit(1) : [null];
 
-	if (!payer) throw new AppError("Payer not found", 404, "PAYER_NOT_FOUND");
-	if (!revenueSource) throw new AppError("Revenue source not found", 404, "REVENUE_SOURCE_NOT_FOUND");
-	if (!collector) throw new AppError("Collector not found", 404, "COLLECTOR_NOT_FOUND");
 	if (collector.status !== "active") throw new AppError("Collector is inactive", 400, "COLLECTOR_INACTIVE");
-	if (!ward && input.wardId) throw new AppError("Ward not found", 404, "WARD_NOT_FOUND");
+	if (!ward && wardId) throw new AppError("Ward not found", 404, "WARD_NOT_FOUND");
 
 	if (actor.role === "collector" && collector.userId !== actor.id) {
 		throw new AppError("Collectors can only record payments against their own collector profile", 403, "FORBIDDEN");
 	}
+
+	return {
+		payerId: payer.id,
+		collectorId: collector.id,
+		revenueSourceId: revenueSource.id,
+		wardId
+	};
 }
 
-async function insertPaymentTx(tx: any, input: CreatePaymentInput, actor: AuthUser) {
+async function insertPaymentTx(
+	tx: any,
+	input: CreatePaymentInput,
+	actor: AuthUser,
+	resolved: { payerId: string; collectorId: string; revenueSourceId: string; wardId: string | null }
+) {
 	const paymentReceiptNumber = generateReceiptNumber();
-	const paymentDate = new Date(input.paymentDate);
+	const paymentDate = new Date(normalizePaymentDate(input.paymentDate));
+	const normalizedPaymentMethod = normalizePaymentMethod(input.paymentMethod);
 
 	const [payment] = await tx
 		.insert(payments)
 		.values({
-			payerId: input.payerId,
-			collectorId: input.collectorId,
-			revenueSourceId: input.revenueSourceId,
-			wardId: input.wardId ?? null,
+			payerId: resolved.payerId,
+			collectorId: resolved.collectorId,
+			revenueSourceId: resolved.revenueSourceId,
+			wardId: resolved.wardId,
 			amount: input.amount.toFixed(2),
 			currency: normalizeCurrency(input.currency),
-			paymentMethod: input.paymentMethod,
+			paymentMethod: normalizedPaymentMethod,
 			paymentDate,
 			notes: input.notes ?? null,
 			offlineReferenceId: input.offlineReferenceId ?? null,
@@ -239,10 +368,10 @@ async function insertPaymentTx(tx: any, input: CreatePaymentInput, actor: AuthUs
 }
 
 export async function createPayment(input: CreatePaymentInput, actor: AuthUser) {
-	await validateRelations(input, actor);
+	const resolved = await validateRelations(input, actor);
 
 	try {
-		const payment = await db.transaction(async (tx) => insertPaymentTx(tx, input, actor));
+		const payment = await db.transaction(async (tx) => insertPaymentTx(tx, input, actor, resolved));
 		return { payment, duplicate: false };
 	} catch (error) {
 		const err = error as { code?: string; constraint?: string };

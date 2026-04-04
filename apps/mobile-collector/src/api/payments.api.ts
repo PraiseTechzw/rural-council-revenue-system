@@ -1,6 +1,18 @@
 import { apiClient } from "./client";
 import type { CreatePaymentResponse, LocalPaymentRecord, PaymentPayload } from "../types/payment.types";
 
+function mapPaymentMethod(paymentMethod: string) {
+	if (paymentMethod === "bank_transfer") {
+		return "bank";
+	}
+
+	if (paymentMethod === "pos") {
+		return "other";
+	}
+
+	return paymentMethod;
+}
+
 type ListPaymentsResponse = {
 	items?: Array<Partial<LocalPaymentRecord>>;
 };
@@ -8,8 +20,16 @@ type ListPaymentsResponse = {
 export const paymentsApi = {
 	async createPayment(payload: PaymentPayload): Promise<CreatePaymentResponse> {
 		const response = await apiClient.post<CreatePaymentResponse>("/payments", {
-			...payload,
-			offline_reference_id: payload.offlineReferenceId
+			payerName: payload.payerName,
+			payerReference: payload.payerReference,
+			revenueSourceCategory: payload.revenueSource,
+			amount: payload.amount,
+			paymentMethod: mapPaymentMethod(payload.paymentMethod),
+			paymentDate: payload.paymentDate.slice(0, 10),
+			notes: payload.notes,
+			collectorId: payload.collectorId,
+			wardId: payload.ward,
+			offlineReferenceId: payload.offlineReferenceId
 		});
 		return response.data;
 	},
