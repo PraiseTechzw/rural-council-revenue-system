@@ -13,10 +13,19 @@ const nextConfig = {
   // Image optimization (important for performance)
   images: {
     formats: ['image/avif', 'image/webp'],
-    domains: [
-      'res.cloudinary.com',
-      'images.unsplash.com',
-      'your-bucket.s3.amazonaws.com',
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'your-bucket.s3.amazonaws.com',
+      },
     ],
   },
 
