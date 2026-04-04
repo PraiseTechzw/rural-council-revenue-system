@@ -11,10 +11,20 @@ export async function listCollectors(params: Record<string, string | number | un
 
 export async function createCollector(payload: { userId: string; wardId?: string | null; employeeNumber?: string; status?: "active" | "inactive" }) {
 	const { data } = await apiClient.post<ApiResponse<Collector>>("/collectors", payload);
+
+	if (!data.success || !data.data) {
+		throw new Error(data.message || "Failed to create collector");
+	}
+
 	return data.data;
 }
 
 export async function updateCollector(id: string, payload: { wardId?: string | null; employeeNumber?: string | null; status?: "active" | "inactive" }) {
 	const { data } = await apiClient.patch<ApiResponse<Collector>>(`/collectors/${id}`, payload);
+
+	if (!data.success || !data.data) {
+		throw new Error(data.message || "Failed to update collector");
+	}
+
 	return data.data;
 }
