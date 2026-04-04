@@ -14,6 +14,26 @@ export async function listPayments(params: Record<string, string | number | unde
 	} satisfies PaymentListResult;
 }
 
+export async function createPayment(payload: {
+	payerName: string;
+	revenueSourceCategory: string;
+	amount: number;
+	paymentMethod: string;
+	paymentDate: string;
+	notes?: string;
+	collectorId: string;
+	offlineReferenceId?: string;
+	wardId?: string | null;
+}) {
+	const { data } = await apiClient.post<ApiResponse<PaymentRecord>>("/payments", payload);
+
+	if (!data.success || !data.data) {
+		throw new Error(data.message || "Failed to create payment");
+	}
+
+	return data.data;
+}
+
 export async function getPaymentById(id: string) {
 	const { data } = await apiClient.get<ApiResponse<PaymentRecord>>(`/payments/${id}`);
 
