@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -50,6 +51,7 @@ export default function LoginPage() {
   return (
     <main>
       <header className="mb-6">
+        <Image src="/logo.png" alt="RRDC logo" width={110} height={110} className="mb-4 h-20 w-20 rounded-xl border border-slate-200 bg-white object-contain p-1" />
         <h1 className="text-xl font-semibold text-slate-900">Web Admin Login</h1>
         <p className="mt-1 text-sm text-slate-500">Sign in to manage rural council revenue operations.</p>
       </header>

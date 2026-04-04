@@ -5,9 +5,19 @@
     "version": "1.0.0",
     "scheme": "mobilecollector",
     "orientation": "portrait",
+    "icon": "./assets/images/logo.png",
+    "splash": {
+      "image": "./assets/images/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "plugins": ["expo-router", "expo-secure-store"],
     "android": {
-      "package": "zw.ruralcouncil.collector"
+      "package": "zw.ruralcouncil.collector",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#ffffff"
+      }
     },
     "extra": {
       "eas": {

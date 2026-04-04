@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, router } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { AppScreen } from "../../src/components/app-screen";
 import { FormInput } from "../../src/components/form-input";
@@ -43,6 +43,7 @@ export default function LoginScreen() {
   return (
     <AppScreen>
       <View style={styles.heroCard}>
+        <Image source={require("../../assets/images/logo.png")} style={styles.logo} resizeMode="contain" />
         <View style={styles.heroBadge}>
           <Text style={styles.heroBadgeText}>Field Collector App</Text>
         </View>
@@ -111,6 +112,14 @@ const styles = StyleSheet.create({
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 10 },
     elevation: 4
+  },
+  logo: {
+    width: 76,
+    height: 76,
+    borderRadius: 14,
+    backgroundColor: "#fff",
+    padding: 4,
+    marginBottom: 4
   },
   heroBadge: {
     alignSelf: "flex-start",

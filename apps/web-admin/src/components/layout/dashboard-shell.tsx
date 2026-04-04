@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { getDashboardRoleSummary, getNavigationItemsForRole } from "@/constants/navigation";
@@ -23,6 +24,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
       <div className="mx-auto flex min-h-screen max-w-[1640px] gap-3 px-3 py-3 lg:gap-5 lg:px-5 lg:py-5">
         <aside className="hidden w-72 premium-panel-strong p-5 lg:block">
           <div className="mb-8 border-b border-white/15 pb-5">
+            <Image src="/logo.png" alt="RRDC logo" width={108} height={108} className="mb-4 h-16 w-16 rounded-xl border border-white/25 bg-white object-contain p-1.5" />
             <p className="premium-kicker text-emerald-100/70">Rural Council</p>
             <h1 className="mt-2 text-xl font-semibold tracking-tight text-white">{roleSummary.title}</h1>
             <p className="mt-1 text-sm text-emerald-100/80">{roleSummary.subtitle}</p>
