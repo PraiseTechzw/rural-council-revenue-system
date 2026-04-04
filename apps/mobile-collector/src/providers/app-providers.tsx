@@ -5,6 +5,18 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "../lib/query-client";
 import { useAuthStore } from "../store/auth.store";
 import { colors } from "../constants/colors";
+import { useSync } from "../hooks/useSync";
+
+function SyncBootstrap() {
+  const status = useAuthStore((state) => state.status);
+  useSync();
+
+  if (status !== "authenticated") {
+    return null;
+  }
+
+  return null;
+}
 
 function AuthHydrationGate({ children }: PropsWithChildren) {
   const status = useAuthStore((state) => state.status);
@@ -28,7 +40,10 @@ function AuthHydrationGate({ children }: PropsWithChildren) {
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthHydrationGate>{children}</AuthHydrationGate>
+      <AuthHydrationGate>
+        <SyncBootstrap />
+        {children}
+      </AuthHydrationGate>
     </QueryClientProvider>
   );
 }

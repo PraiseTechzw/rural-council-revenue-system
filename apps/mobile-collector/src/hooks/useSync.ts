@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { runSyncEngine } from "../features/offline-sync/sync-engine";
@@ -33,6 +33,8 @@ export function useSync() {
 				onSynced: markSynced,
 				onFailed: markFailed
 			});
+
+			const lastAutoAttemptKeyRef = useRef<string>("");
 		},
 		onMutate: () => {
 			setSyncing(true);
@@ -60,10 +62,20 @@ export function useSync() {
 		}
 
 		await mutation.mutateAsync();
-	}, [isOnline, isSyncing, mutation, pendingPayments.length]);
+	}, [isOnline, isSyncing, mutation, pendingPayments]);
 
 	useEffect(() => {
-		if (isOnline && pendingPayments.length > 0 && !isSyncing && !mutation.isPending) {
+		const pendingKey = pendingPayments.map((item) => `${item.localId}:${item.syncStatus}`).join("|");
+		const autoAttemptKey = `${isOnline}-${pendingKey}`;
+
+		if (
+			isOnline &&
+			pendingPayments.length > 0 &&
+			!isSyncing &&
+			!mutation.isPending &&
+			lastAutoAttemptKeyRef.current !== autoAttemptKey
+		) {
+			lastAutoAttemptKeyRef.current = autoAttemptKey;
 			mutation.mutate();
 		}
 	}, [isOnline, isSyncing, mutation, pendingPayments.length]);
