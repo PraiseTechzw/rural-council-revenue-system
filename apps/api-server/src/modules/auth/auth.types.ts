@@ -5,6 +5,10 @@ export type AuthUser = {
 	email: string;
 	role: string;
 	phoneNumber?: string | null;
+	collectorId?: string | null;
+	collectorStatus?: "active" | "inactive" | null;
+	wardId?: string | null;
+	wardName?: string | null;
 };
 
 export type AuthTokens = {
