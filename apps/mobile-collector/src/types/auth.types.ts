@@ -6,6 +6,8 @@ export type CollectorUser = {
 	email?: string;
 	role: string;
 	assignedWard?: string;
+	wardId?: string;
+	collectorStatus?: "active" | "inactive";
 };
 
 export type LoginPayload = {

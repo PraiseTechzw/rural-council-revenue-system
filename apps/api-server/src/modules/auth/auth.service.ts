@@ -4,8 +4,10 @@ import jwt, { type Secret, type SignOptions } from "jsonwebtoken";
 import { env } from "../../config/env";
 import { db } from "../../db";
 import { auditLogs } from "../../db/schema/audit_logs";
+import { collectors } from "../../db/schema/collectors";
 import { roles } from "../../db/schema/roles";
 import { users } from "../../db/schema/users";
+import { wards } from "../../db/schema/wards";
 import { AppError } from "../../middleware/error.middleware";
 import type { AuthTokens, AuthUser, ChangePasswordInput, LoginInput, LoginResult } from "./auth.types";
 
@@ -18,6 +20,10 @@ type UserCredentialsRow = {
 	passwordHash: string;
 	role: string;
 	isActive: boolean;
+	collectorId: string | null;
+	collectorStatus: "active" | "inactive" | null;
+	wardId: string | null;
+	wardName: string | null;
 };
 
 function sanitizeUser(user: UserCredentialsRow): AuthUser {
@@ -27,7 +33,11 @@ function sanitizeUser(user: UserCredentialsRow): AuthUser {
 		lastName: user.lastName,
 		email: user.email,
 		role: user.role,
-		phoneNumber: user.phoneNumber
+		phoneNumber: user.phoneNumber,
+		collectorId: user.collectorId,
+		collectorStatus: user.collectorStatus,
+		wardId: user.wardId,
+		wardName: user.wardName
 	};
 }
 
@@ -72,10 +82,16 @@ async function findUserByEmail(email: string) {
 			phoneNumber: users.phoneNumber,
 			passwordHash: users.passwordHash,
 			isActive: users.isActive,
-			role: roles.name
+			role: roles.name,
+			collectorId: collectors.id,
+			collectorStatus: collectors.status,
+			wardId: collectors.wardId,
+			wardName: wards.name
 		})
 		.from(users)
 		.innerJoin(roles, eq(users.roleId, roles.id))
+		.leftJoin(collectors, eq(collectors.userId, users.id))
+		.leftJoin(wards, eq(collectors.wardId, wards.id))
 		.where(eq(users.email, email.toLowerCase()))
 		.limit(1);
 
@@ -92,10 +108,16 @@ async function findUserById(id: string) {
 			phoneNumber: users.phoneNumber,
 			passwordHash: users.passwordHash,
 			isActive: users.isActive,
-			role: roles.name
+			role: roles.name,
+			collectorId: collectors.id,
+			collectorStatus: collectors.status,
+			wardId: collectors.wardId,
+			wardName: wards.name
 		})
 		.from(users)
 		.innerJoin(roles, eq(users.roleId, roles.id))
+		.leftJoin(collectors, eq(collectors.userId, users.id))
+		.leftJoin(wards, eq(collectors.wardId, wards.id))
 		.where(eq(users.id, id))
 		.limit(1);
 
@@ -105,8 +127,22 @@ async function findUserById(id: string) {
 export async function login(input: LoginInput): Promise<LoginResult> {
 	const userRecord = await findUserByEmail(input.email);
 
-	if (!userRecord || !userRecord.isActive) {
+	if (!userRecord) {
 		throw new AppError("Invalid email or password", 401, "INVALID_CREDENTIALS");
+	}
+
+	if (!userRecord.isActive) {
+		throw new AppError("Your account is inactive. Contact an administrator.", 403, "ACCOUNT_INACTIVE");
+	}
+
+	if (userRecord.role === "collector") {
+		if (!userRecord.collectorId) {
+			throw new AppError("Collector profile is not assigned yet. Contact an administrator.", 403, "COLLECTOR_NOT_ASSIGNED");
+		}
+
+		if (userRecord.collectorStatus !== "active") {
+			throw new AppError("Collector assignment is inactive. Contact an administrator.", 403, "COLLECTOR_INACTIVE");
+		}
 	}
 
 	const passwordMatches = await bcrypt.compare(input.password, userRecord.passwordHash);

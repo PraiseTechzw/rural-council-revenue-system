@@ -7,6 +7,16 @@ import { storageKeys } from "../constants/config";
 import { clearAccessToken, getAccessToken, saveAccessToken } from "../lib/secure-token";
 import type { AuthStatus, CollectorUser, LoginPayload } from "../types/auth.types";
 
+function assertCollectorAccess(user: CollectorUser) {
+	if (user.role !== "collector") {
+		throw new Error("This app is only available for collector accounts.");
+	}
+
+	if (user.collectorStatus && user.collectorStatus !== "active") {
+		throw new Error("Your collector assignment is inactive. Contact an administrator.");
+	}
+}
+
 type AuthState = {
 	user: CollectorUser | null;
 	status: AuthStatus;
@@ -41,6 +51,7 @@ export const useAuthStore = create<AuthState>()(
 					}
 
 					const user = await authApi.me();
+					assertCollectorAccess(user);
 					set({ token, user, status: "authenticated" });
 				} catch (error) {
 					await clearAccessToken();
@@ -60,6 +71,7 @@ export const useAuthStore = create<AuthState>()(
 
 					await saveAccessToken(response.accessToken);
 					const user = response.user ?? (await authApi.me());
+					assertCollectorAccess(user);
 
 					set({
 						token: response.accessToken,

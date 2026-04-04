@@ -7,6 +7,9 @@ type BackendAuthUser = {
 	lastName?: string;
 	email?: string;
 	role?: string;
+	collectorStatus?: "active" | "inactive" | null;
+	wardId?: string | null;
+	wardName?: string | null;
 };
 
 type ApiEnvelope<T> = {
@@ -35,7 +38,10 @@ function mapUser(user?: BackendAuthUser): CollectorUser | undefined {
 		id: user.id,
 		name: fullName || "Collector",
 		email: user.email,
-		role: user.role ?? "collector"
+		role: user.role ?? "collector",
+		assignedWard: user.wardName ?? undefined,
+		wardId: user.wardId ?? undefined,
+		collectorStatus: user.collectorStatus ?? undefined
 	};
 }
 
