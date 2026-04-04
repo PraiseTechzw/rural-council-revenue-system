@@ -22,7 +22,7 @@ const nextConfig = {
 
   // Environment variables (safe exposure to client)
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NEXT_PUBLIC_APP_NAME: 'YourApp',
   },
 
