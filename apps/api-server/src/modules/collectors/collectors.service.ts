@@ -87,6 +87,37 @@ export async function getCollectorById(id: string) {
 	return collector;
 }
 
+export async function getCollectorByUserId(userId: string) {
+	const [collector] = await db
+		.select({
+			id: collectors.id,
+			userId: collectors.userId,
+			wardId: collectors.wardId,
+			employeeNumber: collectors.employeeNumber,
+			status: collectors.status,
+			createdAt: collectors.createdAt,
+			updatedAt: collectors.updatedAt,
+			userFirstName: users.firstName,
+			userLastName: users.lastName,
+			userEmail: users.email,
+			userRole: roles.name,
+			wardName: wards.name,
+			wardCode: wards.code
+		})
+		.from(collectors)
+		.innerJoin(users, eq(collectors.userId, users.id))
+		.innerJoin(roles, eq(users.roleId, roles.id))
+		.leftJoin(wards, eq(collectors.wardId, wards.id))
+		.where(eq(collectors.userId, userId))
+		.limit(1);
+
+	if (!collector) {
+		throw new AppError("Collector not found", 404, "COLLECTOR_NOT_FOUND");
+	}
+
+	return collector;
+}
+
 export async function createCollector(input: { userId: string; wardId?: string | null; employeeNumber?: string; status?: string }, actorId?: string | null) {
 	const [userRecord] = await db.select({ id: users.id, roleName: roles.name }).from(users).innerJoin(roles, eq(users.roleId, roles.id)).where(eq(users.id, input.userId)).limit(1);
 

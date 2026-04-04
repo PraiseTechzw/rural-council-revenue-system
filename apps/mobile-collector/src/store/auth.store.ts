@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { authApi } from "../api/auth.api";
+import { collectorsApi } from "../api/collectors.api";
 import { storageKeys } from "../constants/config";
 import { clearAccessToken, getAccessToken, saveAccessToken } from "../lib/secure-token";
 import type { AuthStatus, CollectorUser, LoginPayload } from "../types/auth.types";
@@ -15,6 +16,15 @@ function assertCollectorAccess(user: CollectorUser) {
 	if (user.collectorStatus && user.collectorStatus !== "active") {
 		throw new Error("Your collector assignment is inactive. Contact an administrator.");
 	}
+}
+
+function mergeCollectorProfile(user: CollectorUser, profile: { wardId?: string | null; wardName?: string | null; status?: "active" | "inactive" }) {
+	return {
+		...user,
+		assignedWard: profile.wardName ?? user.assignedWard,
+		wardId: profile.wardId ?? user.wardId,
+		collectorStatus: profile.status ?? user.collectorStatus
+	};
 }
 
 type AuthState = {
@@ -51,8 +61,10 @@ export const useAuthStore = create<AuthState>()(
 					}
 
 					const user = await authApi.me();
-					assertCollectorAccess(user);
-					set({ token, user, status: "authenticated" });
+					const profile = await collectorsApi.me();
+					const mergedUser = mergeCollectorProfile(user, profile);
+					assertCollectorAccess(mergedUser);
+					set({ token, user: mergedUser, status: "authenticated" });
 				} catch (error) {
 					await clearAccessToken();
 					set({
@@ -71,11 +83,13 @@ export const useAuthStore = create<AuthState>()(
 
 					await saveAccessToken(response.accessToken);
 					const user = await authApi.me();
-					assertCollectorAccess(user);
+					const profile = await collectorsApi.me();
+					const mergedUser = mergeCollectorProfile(user, profile);
+					assertCollectorAccess(mergedUser);
 
 					set({
 						token: response.accessToken,
-						user,
+						user: mergedUser,
 						status: "authenticated",
 						errorMessage: null
 					});
