@@ -1,7 +1,7 @@
 import axios from "axios";
 import { clearAccessToken, getAccessToken } from "@/lib/session";
 
-const DEFAULT_API_BASE_URL = "http://localhost:4000/api/v1";
+const DEFAULT_API_BASE_URL = "https://rural-council-revenue-system.onrender.com/api/v1";
 
 function normalizeApiBaseUrl(value: string | undefined): string {
   const trimmedValue = value?.trim().replace(/\/$/, "");
