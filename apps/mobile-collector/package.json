@@ -8,8 +8,9 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "build": "echo \"use build:apk for Android test builds\"",
+    "build": "echo \"use build:apk:prod for production APK builds\"",
     "build:apk": "npx eas-cli build -p android --profile preview --non-interactive",
+    "build:apk:prod": "npx eas-cli build -p android --profile production-apk --non-interactive",
     "lint": "echo \"lint setup pending\"",
     "format": "echo \"format setup pending\"",
     "typecheck": "tsc --noEmit"
