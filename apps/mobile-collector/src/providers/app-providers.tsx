@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { Component, PropsWithChildren } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
 
@@ -6,82 +6,100 @@ import { checkBackendHealth } from "../api/health.api";
 import { queryClient } from "../lib/query-client";
 import { useAuthStore } from "../store/auth.store";
 import { colors } from "../constants/colors";
-import { useSync } from "../hooks/useSync";
 
-function SyncBootstrap() {
-  const status = useAuthStore((state) => state.status);
-  useSync({ enabled: status === "authenticated" });
+type AuthBootstrapGateState = {
+  backendState: "checking" | "ready" | "failed";
+  backendError: string | null;
+  authState: "idle" | "hydrating" | "ready";
+};
 
-  return null;
-}
+class AuthBootstrapGate extends Component<PropsWithChildren, AuthBootstrapGateState> {
+  state: AuthBootstrapGateState = {
+    backendState: "checking",
+    backendError: null,
+    authState: "idle"
+  };
 
-function AuthHydrationGate({ children }: PropsWithChildren) {
-  const status = useAuthStore((state) => state.status);
-  const hydrate = useAuthStore((state) => state.hydrate);
-  const [backendState, setBackendState] = useState<"checking" | "ready" | "failed">("checking");
-  const [backendError, setBackendError] = useState<string | null>(null);
+  private isMountedFlag = false;
 
-  const validateBackendAndHydrate = async () => {
-    setBackendState("checking");
-    setBackendError(null);
+  async componentDidMount() {
+    this.isMountedFlag = true;
+    await this.validateBackendAndHydrate();
+  }
+
+  componentWillUnmount() {
+    this.isMountedFlag = false;
+  }
+
+  private setSafeState(nextState: Partial<AuthBootstrapGateState>) {
+    if (this.isMountedFlag) {
+      this.setState(nextState as Pick<AuthBootstrapGateState, keyof AuthBootstrapGateState>);
+    }
+  }
+
+  private async validateBackendAndHydrate() {
+    this.setSafeState({ backendState: "checking", backendError: null, authState: "idle" });
 
     try {
       await checkBackendHealth();
-      setBackendState("ready");
-      await hydrate();
+      this.setSafeState({ backendState: "ready", authState: "hydrating" });
+
+      await useAuthStore.getState().hydrate();
+
+      this.setSafeState({ authState: "ready" });
     } catch (error) {
-      setBackendState("failed");
-      setBackendError(error instanceof Error ? error.message : "Could not connect to backend API.");
+      this.setSafeState({
+        backendState: "failed",
+        backendError: error instanceof Error ? error.message : "Could not connect to backend API.",
+        authState: "idle"
+      });
     }
-  };
-
-  useEffect(() => {
-    void validateBackendAndHydrate();
-  }, []);
-
-  if (backendState === "checking") {
-    return (
-      <View style={styles.loaderWrap}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loaderTitle}>Connecting to backend</Text>
-        <Text style={styles.loaderText}>Please wait while the app connects to the API server.</Text>
-      </View>
-    );
   }
 
-  if (backendState === "failed") {
-    return (
-      <View style={styles.loaderWrap}>
-        <Text style={styles.loaderTitle}>Backend Connection Failed</Text>
-        <Text style={styles.loaderText}>{backendError || "Cannot reach API server."}</Text>
-        <Text style={styles.loaderText}>Ensure API server is running and reachable from your device.</Text>
-        <Pressable style={styles.retryButton} onPress={() => void validateBackendAndHydrate()}>
-          <Text style={styles.retryText}>Retry Connection</Text>
-        </Pressable>
-      </View>
-    );
-  }
+  render() {
+    const { backendError, backendState, authState } = this.state;
 
-  if (status === "idle" || status === "hydrating") {
-    return (
-      <View style={styles.loaderWrap}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loaderTitle}>Checking your session</Text>
-        <Text style={styles.loaderText}>Please wait while the app verifies your account.</Text>
-      </View>
-    );
-  }
+    if (backendState === "checking") {
+      return (
+        <View style={styles.loaderWrap}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loaderTitle}>Connecting to backend</Text>
+          <Text style={styles.loaderText}>Please wait while the app connects to the API server.</Text>
+        </View>
+      );
+    }
 
-  return children;
+    if (backendState === "failed") {
+      return (
+        <View style={styles.loaderWrap}>
+          <Text style={styles.loaderTitle}>Backend Connection Failed</Text>
+          <Text style={styles.loaderText}>{backendError || "Cannot reach API server."}</Text>
+          <Text style={styles.loaderText}>Ensure API server is running and reachable from your device.</Text>
+          <Pressable style={styles.retryButton} onPress={() => void this.validateBackendAndHydrate()}>
+            <Text style={styles.retryText}>Retry Connection</Text>
+          </Pressable>
+        </View>
+      );
+    }
+
+    if (authState === "hydrating" || authState === "idle") {
+      return (
+        <View style={styles.loaderWrap}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loaderTitle}>Checking your session</Text>
+          <Text style={styles.loaderText}>Please wait while the app verifies your account.</Text>
+        </View>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthHydrationGate>
-        <SyncBootstrap />
-        {children}
-      </AuthHydrationGate>
+      <AuthBootstrapGate>{children}</AuthBootstrapGate>
     </QueryClientProvider>
   );
 }
