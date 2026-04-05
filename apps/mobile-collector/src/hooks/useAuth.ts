@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-
 import { useAuthStore } from "../store/auth.store";
 
 export function useAuth() {
@@ -11,18 +9,15 @@ export function useAuth() {
 	const logout = useAuthStore((state) => state.logout);
 	const setError = useAuthStore((state) => state.setError);
 
-	return useMemo(
-		() => ({
-			user,
-			status,
-			errorMessage,
-			isAuthenticated: status === "authenticated",
-			isHydrating: status === "hydrating" || status === "idle",
-			hydrate,
-			login,
-			logout,
-			setError
-		}),
-		[errorMessage, hydrate, login, logout, setError, status, user]
-	);
+	return {
+		user,
+		status,
+		errorMessage,
+		isAuthenticated: status === "authenticated",
+		isHydrating: status === "hydrating" || status === "idle",
+		hydrate,
+		login,
+		logout,
+		setError
+	};
 }
