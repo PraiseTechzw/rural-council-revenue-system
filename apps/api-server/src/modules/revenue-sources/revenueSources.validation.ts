@@ -13,17 +13,19 @@ export const listRevenueSourcesQuerySchema = z.object({
 });
 
 export const createRevenueSourceSchema = z.object({
-	name: z.string().min(1),
-	code: z.string().min(1),
+	name: z.string().trim().min(1),
+	code: z.string().trim().min(1),
 	category: z.enum(["shop_rental", "housing_stand", "mining_fee", "market_levy", "other"]),
-	description: z.string().optional(),
+	description: z.string().trim().optional(),
 	isActive: z.boolean().default(true)
 });
 
 export const updateRevenueSourceSchema = z.object({
-	name: z.string().min(1).optional(),
-	code: z.string().min(1).optional(),
+	name: z.string().trim().min(1).optional(),
+	code: z.string().trim().min(1).optional(),
 	category: z.enum(["shop_rental", "housing_stand", "mining_fee", "market_levy", "other"]).optional(),
-	description: z.string().optional().nullable(),
+	description: z.string().trim().optional().nullable(),
 	isActive: z.boolean().optional()
+}).refine((value) => Object.values(value).some((field) => field !== undefined), {
+	message: "At least one field must be provided for update"
 });

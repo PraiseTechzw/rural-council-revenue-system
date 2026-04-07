@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, notEq, or } from "drizzle-orm";
 import { db } from "../../db";
 import { auditLogs } from "../../db/schema/audit_logs";
 import { revenueSources } from "../../db/schema/revenue_sources";
@@ -40,33 +40,72 @@ export async function getRevenueSourceById(id: string) {
 }
 
 export async function createRevenueSource(input: { name: string; code: string; category: string; description?: string; isActive?: boolean }, actorId?: string | null) {
-	const [existing] = await db.select({ id: revenueSources.id }).from(revenueSources).where(or(eq(revenueSources.name, input.name), eq(revenueSources.code, input.code))).limit(1);
+	const payload = {
+		...input,
+		name: input.name.trim(),
+		code: input.code.trim(),
+		description: input.description?.trim() || undefined
+	};
+
+	const [existing] = await db.select({ id: revenueSources.id }).from(revenueSources).where(or(eq(revenueSources.name, payload.name), eq(revenueSources.code, payload.code))).limit(1);
 
 	if (existing) {
 		throw new AppError("Revenue source name or code already exists", 409, "REVENUE_SOURCE_EXISTS");
 	}
 
-	const [row] = await db.insert(revenueSources).values(input).returning();
+	const [row] = await db.insert(revenueSources).values(payload).returning();
 	await db.insert(auditLogs).values({
 		userId: actorId ?? null,
 		action: "revenue_source_created",
 		entityType: "revenue_source",
 		entityId: row.id,
-		metadata: input,
+		metadata: payload,
 		ipAddress: null
 	});
 	return row;
 }
 
 export async function updateRevenueSource(id: string, input: { name?: string; code?: string; category?: string; description?: string | null; isActive?: boolean }, actorId?: string | null) {
-	await getRevenueSourceById(id);
-	const [row] = await db.update(revenueSources).set(input).where(eq(revenueSources.id, id)).returning();
+	const current = await getRevenueSourceById(id);
+
+	const updateData: { name?: string; code?: string; category?: string; description?: string | null; isActive?: boolean } = {};
+	if (input.name !== undefined) updateData.name = input.name.trim();
+	if (input.code !== undefined) updateData.code = input.code.trim();
+	if (input.category !== undefined) updateData.category = input.category;
+	if (input.description !== undefined) updateData.description = input.description === null ? null : input.description.trim() || null;
+	if (input.isActive !== undefined) updateData.isActive = input.isActive;
+
+	if (updateData.name && updateData.name !== current.name) {
+		const [nameExists] = await db
+			.select({ id: revenueSources.id })
+			.from(revenueSources)
+			.where(and(eq(revenueSources.name, updateData.name), notEq(revenueSources.id, id)))
+			.limit(1);
+
+		if (nameExists) {
+			throw new AppError("Revenue source name already exists", 409, "REVENUE_SOURCE_NAME_EXISTS");
+		}
+	}
+
+	if (updateData.code && updateData.code !== current.code) {
+		const [codeExists] = await db
+			.select({ id: revenueSources.id })
+			.from(revenueSources)
+			.where(and(eq(revenueSources.code, updateData.code), notEq(revenueSources.id, id)))
+			.limit(1);
+
+		if (codeExists) {
+			throw new AppError("Revenue source code already exists", 409, "REVENUE_SOURCE_CODE_EXISTS");
+		}
+	}
+
+	const [row] = await db.update(revenueSources).set(updateData).where(eq(revenueSources.id, id)).returning();
 	await db.insert(auditLogs).values({
 		userId: actorId ?? null,
 		action: "revenue_source_updated",
 		entityType: "revenue_source",
 		entityId: id,
-		metadata: input,
+		metadata: updateData,
 		ipAddress: null
 	});
 	return row;
