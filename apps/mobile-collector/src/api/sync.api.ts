@@ -7,6 +7,8 @@ export const syncApi = {
 			payerName: payment.payerName,
 			payerReference: payment.payerReference,
 			revenueSource: payment.revenueSource,
+			revenueSourceId: payment.revenueSourceId,
+			revenueSourceCategory: payment.revenueSourceCategory,
 			amount: payment.amount,
 			paymentMethod: payment.paymentMethod,
 			paymentDate: payment.paymentDate,

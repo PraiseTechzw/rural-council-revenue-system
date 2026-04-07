@@ -7,6 +7,7 @@ import { receiptsApi } from "../../src/api/receipts.api";
 import { AppScreen } from "../../src/components/app-screen";
 import { StatusPill } from "../../src/components/status-pill";
 import { colors } from "../../src/constants/colors";
+import { getRevenueSourceLabel } from "../../src/constants/revenue-types";
 import { formatCurrency, formatDateTime } from "../../src/lib/format";
 import { usePaymentStore } from "../../src/store/payment.store";
 
@@ -39,7 +40,7 @@ export default function PaymentDetailsScreen() {
         <Text style={styles.title}>Payment Details</Text>
         <StatusPill status={record.syncStatus} />
         <Text style={styles.row}>Payer: {record.payerName}</Text>
-        <Text style={styles.row}>Revenue: {record.revenueSource}</Text>
+        <Text style={styles.row}>Revenue: {getRevenueSourceLabel(record.revenueSource)}</Text>
         <Text style={styles.row}>Amount: {formatCurrency(record.amount)}</Text>
         <Text style={styles.row}>Method: {record.paymentMethod}</Text>
         <Text style={styles.row}>Date: {formatDateTime(record.paymentDate)}</Text>

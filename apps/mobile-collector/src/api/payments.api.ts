@@ -22,7 +22,8 @@ export const paymentsApi = {
 		const response = await apiClient.post<CreatePaymentResponse>("/payments", {
 			payerName: payload.payerName,
 			payerReference: payload.payerReference,
-			revenueSourceCategory: payload.revenueSource,
+			revenueSourceId: payload.revenueSourceId,
+			revenueSourceCategory: payload.revenueSourceCategory,
 			amount: payload.amount,
 			paymentMethod: mapPaymentMethod(payload.paymentMethod),
 			paymentDate: payload.paymentDate.slice(0, 10),

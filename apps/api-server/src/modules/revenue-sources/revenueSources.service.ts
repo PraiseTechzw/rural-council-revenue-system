@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, notEq, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, ne, or } from "drizzle-orm";
 import { db } from "../../db";
 import { auditLogs } from "../../db/schema/audit_logs";
 import { revenueSources } from "../../db/schema/revenue_sources";
@@ -79,7 +79,7 @@ export async function updateRevenueSource(id: string, input: { name?: string; co
 		const [nameExists] = await db
 			.select({ id: revenueSources.id })
 			.from(revenueSources)
-			.where(and(eq(revenueSources.name, updateData.name), notEq(revenueSources.id, id)))
+			.where(and(eq(revenueSources.name, updateData.name), ne(revenueSources.id, id)))
 			.limit(1);
 
 		if (nameExists) {
@@ -91,7 +91,7 @@ export async function updateRevenueSource(id: string, input: { name?: string; co
 		const [codeExists] = await db
 			.select({ id: revenueSources.id })
 			.from(revenueSources)
-			.where(and(eq(revenueSources.code, updateData.code), notEq(revenueSources.id, id)))
+			.where(and(eq(revenueSources.code, updateData.code), ne(revenueSources.id, id)))
 			.limit(1);
 
 		if (codeExists) {

@@ -12,3 +12,13 @@ export const paymentMethods = [
 	{ label: "Bank Transfer", value: "bank" },
 	{ label: "POS", value: "other" }
 ] as const;
+
+export function getRevenueSourceLabel(value: string) {
+	const match = revenueSources.find((item) => item.value === value);
+
+	if (match) {
+		return match.label;
+	}
+
+	return value;
+}

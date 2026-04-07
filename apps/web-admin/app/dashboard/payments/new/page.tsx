@@ -27,7 +27,7 @@ export default function NewPaymentPage() {
 	const [collectorId, setCollectorId] = useState("");
 	const [wardId, setWardId] = useState("");
 	const [paymentMethod, setPaymentMethod] = useState<(typeof paymentMethods)[number]["value"]>("cash");
-	const [revenueSourceCategory, setRevenueSourceCategory] = useState("");
+	const [revenueSourceId, setRevenueSourceId] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const collectorsQuery = useQuery({
@@ -56,7 +56,7 @@ export default function NewPaymentPage() {
 		}
 	});
 
-	const canSubmit = payerName.trim().length > 1 && amount && revenueSourceCategory && collectorId && paymentDate;
+	const canSubmit = payerName.trim().length > 1 && amount && revenueSourceId && collectorId && paymentDate;
 
 	return (
 		<section className="dashboard-page reveal">
@@ -79,7 +79,7 @@ export default function NewPaymentPage() {
 							try {
 								await mutation.mutateAsync({
 									payerName: payerName.trim(),
-									revenueSourceCategory,
+									revenueSourceId,
 									amount: Number(amount),
 									paymentMethod,
 									paymentDate,
@@ -109,11 +109,11 @@ export default function NewPaymentPage() {
 						<div className="grid gap-4 md:grid-cols-2">
 							<label className="grid gap-2">
 								<span className="text-sm font-semibold text-slate-700">Revenue source</span>
-								<select className="premium-input" value={revenueSourceCategory} onChange={(event) => setRevenueSourceCategory(event.target.value)}>
+								<select className="premium-input" value={revenueSourceId} onChange={(event) => setRevenueSourceId(event.target.value)}>
 									<option value="">Select revenue source</option>
 									{revenueSourceOptions.map((source) => (
-										<option key={source.id} value={source.category}>
-											{source.name}
+										<option key={source.id} value={source.id}>
+											{source.name} ({source.code})
 										</option>
 									))}
 								</select>

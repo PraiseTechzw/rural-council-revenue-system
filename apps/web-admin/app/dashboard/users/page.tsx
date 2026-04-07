@@ -220,6 +220,7 @@ export default function UsersPage() {
               <p className="text-sm text-slate-500">Select a user from the table.</p>
             ) : (
               <form
+                key={selectedUser.id}
                 className="space-y-3"
                 onSubmit={async (event) => {
                   event.preventDefault();

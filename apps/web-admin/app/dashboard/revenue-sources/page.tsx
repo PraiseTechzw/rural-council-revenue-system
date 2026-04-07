@@ -10,6 +10,10 @@ const categoryOptions = ["shop_rental", "housing_stand", "mining_fee", "market_l
 type StatusFilter = "all" | "active" | "inactive";
 type Feedback = { type: "success" | "error"; message: string };
 
+function formatCategoryLabel(value: string) {
+  return value.replace(/_/g, " ").replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 export default function RevenueSourcesPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -56,8 +60,11 @@ export default function RevenueSourcesPage() {
       setCreateFeedback({ type: "success", message: "Revenue source added successfully." });
       await queryClient.invalidateQueries({ queryKey: ["revenue-sources"] });
     },
-    onError: () => {
-      setCreateFeedback({ type: "error", message: "Unable to add revenue source. Confirm values and try again." });
+    onError: (error) => {
+      setCreateFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "Unable to add revenue source. Confirm values and try again."
+      });
     }
   });
 
@@ -68,8 +75,11 @@ export default function RevenueSourcesPage() {
       setUpdateFeedback({ type: "success", message: "Revenue source updated successfully." });
       await queryClient.invalidateQueries({ queryKey: ["revenue-sources"] });
     },
-    onError: () => {
-      setUpdateFeedback({ type: "error", message: "Unable to update revenue source. Resolve errors and retry." });
+    onError: (error) => {
+      setUpdateFeedback({
+        type: "error",
+        message: error instanceof Error ? error.message : "Unable to update revenue source. Resolve errors and retry."
+      });
     }
   });
 
@@ -92,7 +102,7 @@ export default function RevenueSourcesPage() {
             <option value="">All categories</option>
             {categoryOptions.map((option) => (
               <option key={option} value={option}>
-                {option}
+                {formatCategoryLabel(option)}
               </option>
             ))}
           </select>
@@ -134,6 +144,12 @@ export default function RevenueSourcesPage() {
                       Loading revenue sources...
                     </td>
                   </tr>
+                ) : sourceQuery.isError ? (
+                  <tr>
+                    <td colSpan={4} className="px-3 py-4 text-center text-rose-700">
+                      Failed to load revenue sources.
+                    </td>
+                  </tr>
                 ) : sourceQuery.data?.rows.length ? (
                   sourceQuery.data.rows.map((source) => (
                   <tr
@@ -143,7 +159,7 @@ export default function RevenueSourcesPage() {
                   >
                     <td className="px-3 py-2 text-slate-800">{source.name}</td>
                     <td className="px-3 py-2 text-slate-700">{source.code}</td>
-                    <td className="px-3 py-2 text-slate-700">{source.category}</td>
+                    <td className="px-3 py-2 text-slate-700">{formatCategoryLabel(source.category)}</td>
                     <td className="px-3 py-2 text-slate-700">{source.isActive ? "active" : "inactive"}</td>
                   </tr>
                   ))
@@ -180,7 +196,7 @@ export default function RevenueSourcesPage() {
                   code: String(formData.get("code") ?? ""),
                   category: String(formData.get("category") ?? "other"),
                   description: String(formData.get("description") ?? "") || undefined,
-                  isActive: true
+                  isActive: String(formData.get("isActive") ?? "true") === "true"
                 });
                 (event.currentTarget as HTMLFormElement).reset();
               }}
@@ -190,11 +206,15 @@ export default function RevenueSourcesPage() {
               <select name="category" className="premium-input" disabled={!canEdit}>
                 {categoryOptions.map((option) => (
                   <option key={option} value={option}>
-                    {option}
+                    {formatCategoryLabel(option)}
                   </option>
                 ))}
               </select>
               <textarea name="description" placeholder="Description" className="premium-input" disabled={!canEdit} rows={3} />
+              <select name="isActive" className="premium-input" defaultValue="true" disabled={!canEdit}>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
               <button className="premium-button w-full" disabled={!canEdit || createMutation.isPending} type="submit">
                 {createMutation.isPending ? "Saving..." : "Create source"}
               </button>
@@ -210,6 +230,7 @@ export default function RevenueSourcesPage() {
               <p className="text-sm text-slate-500">Select a source row to edit.</p>
             ) : (
               <form
+                key={selectedSource.id}
                 className="space-y-3"
                 onSubmit={async (event) => {
                   event.preventDefault();
@@ -236,7 +257,7 @@ export default function RevenueSourcesPage() {
                 <select name="category" defaultValue={selectedSource.category} className="premium-input" disabled={!canEdit}>
                   {categoryOptions.map((option) => (
                     <option key={option} value={option}>
-                      {option}
+                      {formatCategoryLabel(option)}
                     </option>
                   ))}
                 </select>

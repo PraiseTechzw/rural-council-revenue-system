@@ -6,7 +6,7 @@ import { createRevenueSourceSchema, listRevenueSourcesQuerySchema, revenueSource
 
 export const revenueSourcesRouter = Router();
 
-revenueSourcesRouter.get("/", requireRoles("admin", "finance_officer"), validateRequest(listRevenueSourcesQuerySchema, "query"), listRevenueSourcesHandler);
+revenueSourcesRouter.get("/", requireRoles("admin", "finance_officer", "collector"), validateRequest(listRevenueSourcesQuerySchema, "query"), listRevenueSourcesHandler);
 revenueSourcesRouter.post("/", requireRoles("admin"), validateRequest(createRevenueSourceSchema, "body"), createRevenueSourceHandler);
-revenueSourcesRouter.get("/:id", requireRoles("admin", "finance_officer"), validateRequest(revenueSourceIdParamSchema, "params"), getRevenueSourceHandler);
+revenueSourcesRouter.get("/:id", requireRoles("admin", "finance_officer", "collector"), validateRequest(revenueSourceIdParamSchema, "params"), getRevenueSourceHandler);
 revenueSourcesRouter.patch("/:id", requireRoles("admin"), validateRequest(revenueSourceIdParamSchema, "params"), validateRequest(updateRevenueSourceSchema, "body"), updateRevenueSourceHandler);

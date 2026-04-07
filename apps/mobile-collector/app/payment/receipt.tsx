@@ -6,6 +6,7 @@ import { receiptsApi } from "../../src/api/receipts.api";
 import { AppScreen } from "../../src/components/app-screen";
 import { StatusPill } from "../../src/components/status-pill";
 import { colors } from "../../src/constants/colors";
+import { getRevenueSourceLabel } from "../../src/constants/revenue-types";
 import { formatCurrency, formatDateTime, formatShortDate } from "../../src/lib/format";
 import { buildTemporaryReceiptNumber } from "../../src/lib/receipt";
 import { usePaymentStore } from "../../src/store/payment.store";
@@ -39,7 +40,7 @@ export default function PaymentReceiptScreen() {
   const receipt = receiptQuery.data;
   const displayCollector = receipt?.collectorName || record.collectorId || "Pending sync";
   const displayWard = receipt?.ward || record.ward || "-";
-  const displayRevenue = receipt?.revenueSource || record.revenueSource;
+  const displayRevenue = receipt?.revenueSource || getRevenueSourceLabel(record.revenueSource);
   const displayPaymentMethod = receipt?.paymentMethod || record.paymentMethod;
   const displayDate = receipt?.paymentDate || record.paymentDate;
   const displayNotes = receipt?.notes ?? record.notes;

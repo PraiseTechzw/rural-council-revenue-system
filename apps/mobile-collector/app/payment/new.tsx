@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { paymentsApi } from "../../src/api/payments.api";
+import { revenueSourcesApi } from "../../src/api/revenueSources.api";
 import { AppScreen } from "../../src/components/app-screen";
 import { FormInput } from "../../src/components/form-input";
 import { PrimaryButton } from "../../src/components/primary-button";
@@ -34,12 +35,42 @@ export default function NewPaymentScreen() {
     [transactions]
   );
 
+  const revenueSourcesQuery = useQuery({
+    queryKey: ["revenue-sources", "collector-form"],
+    queryFn: () => revenueSourcesApi.listActive(),
+    enabled: isOnline
+  });
+
+  const revenueSourceOptions = useMemo(() => {
+    if (revenueSourcesQuery.data?.length) {
+      return revenueSourcesQuery.data.map((item) => ({
+        key: item.id,
+        label: item.name,
+        value: item.name,
+        revenueSourceId: item.id,
+        revenueSourceCategory: item.category,
+        helperText: item.code
+      }));
+    }
+
+    return revenueSources.map((item) => ({
+      key: item.value,
+      label: item.label,
+      value: item.label,
+      revenueSourceId: undefined,
+      revenueSourceCategory: item.value,
+      helperText: "Offline default"
+    }));
+  }, [revenueSourcesQuery.data]);
+
   const form = useForm<PaymentSchemaInput>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
       payerName: "",
       payerReference: "",
-      revenueSource: "shop_rental",
+      revenueSource: "",
+      revenueSourceId: "",
+      revenueSourceCategory: "",
       amount: 0,
       paymentMethod: "cash",
       paymentDate: new Date().toISOString().slice(0, 10),
@@ -54,6 +85,7 @@ export default function NewPaymentScreen() {
   const amount = watch("amount");
   const paymentDate = watch("paymentDate");
   const notes = watch("notes");
+  const selectedRevenueLabel = selectedRevenue || "-";
 
   const mutation = useMutation({
     mutationFn: paymentsApi.createPayment
@@ -98,7 +130,9 @@ export default function NewPaymentScreen() {
       reset({
         payerName: "",
         payerReference: "",
-        revenueSource: "shop_rental",
+        revenueSource: "",
+        revenueSourceId: "",
+        revenueSourceCategory: "",
         amount: 0,
         paymentMethod: "cash",
         paymentDate: new Date().toISOString().slice(0, 10),
@@ -189,16 +223,24 @@ export default function NewPaymentScreen() {
           <View style={styles.suggestionBlock}>
             <Text style={styles.suggestionTitle}>Revenue source</Text>
             <View style={styles.tagWrap}>
-              {revenueSources.map((item) => (
+              {revenueSourceOptions.map((item) => (
                 <Pressable
-                  key={item.value}
-                  onPress={() => setValue("revenueSource", item.value, { shouldValidate: true })}
+                  key={item.key}
+                  onPress={() => {
+                    setValue("revenueSource", item.value, { shouldValidate: true });
+                    setValue("revenueSourceId", item.revenueSourceId || "", { shouldValidate: true });
+                    setValue("revenueSourceCategory", item.revenueSourceCategory || "", { shouldValidate: true });
+                  }}
                   style={[styles.tag, selectedRevenue === item.value && styles.tagSelected]}
                 >
                   <Text style={[styles.tagText, selectedRevenue === item.value && styles.tagTextSelected]}>{item.label}</Text>
+                  <Text style={[styles.tagHelperText, selectedRevenue === item.value && styles.tagHelperTextSelected]}>{item.helperText}</Text>
                 </Pressable>
               ))}
             </View>
+            {formState.errors.revenueSource ? <Text style={styles.error}>{formState.errors.revenueSource.message}</Text> : null}
+            {!isOnline ? <Text style={styles.helperText}>Offline mode is using the saved default revenue source list.</Text> : null}
+            {revenueSourcesQuery.isError ? <Text style={styles.helperText}>Live revenue sources could not be loaded, so offline defaults are shown.</Text> : null}
           </View>
 
           <Controller
@@ -288,7 +330,7 @@ export default function NewPaymentScreen() {
 
           <View style={styles.reviewCard}>
             <ReviewRow label="Payer" value={payerName || "-"} />
-            <ReviewRow label="Revenue" value={revenueSources.find((item) => item.value === watch("revenueSource"))?.label ?? "-"} />
+            <ReviewRow label="Revenue" value={selectedRevenueLabel} />
             <ReviewRow label="Amount" value={String(amount || 0)} />
             <ReviewRow label="Method" value={paymentMethods.find((item) => item.value === selectedMethod)?.label ?? "-"} />
             <ReviewRow label="Date" value={paymentDate} />
@@ -428,9 +470,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.background,
-    borderRadius: 999,
+    borderRadius: 18,
     paddingVertical: 8,
-    paddingHorizontal: 12
+    paddingHorizontal: 12,
+    gap: 2
   },
   tagSelected: {
     backgroundColor: colors.primary,
@@ -443,6 +486,17 @@ const styles = StyleSheet.create({
   },
   tagTextSelected: {
     color: "#fff"
+  },
+  tagHelperText: {
+    color: colors.textSecondary,
+    fontSize: 11
+  },
+  tagHelperTextSelected: {
+    color: "#D9FFF6"
+  },
+  helperText: {
+    color: colors.textSecondary,
+    fontSize: 12
   },
   quickAmountRow: {
     flexDirection: "row",

@@ -1,12 +1,13 @@
-import { paymentMethods, revenueSources } from "../constants/revenue-types";
+import { paymentMethods } from "../constants/revenue-types";
 
-export type RevenueSource = (typeof revenueSources)[number]["value"];
 export type PaymentMethod = (typeof paymentMethods)[number]["value"];
 
 export type PaymentFormInput = {
 	payerName: string;
 	payerReference?: string;
-	revenueSource: RevenueSource;
+	revenueSource: string;
+	revenueSourceId?: string;
+	revenueSourceCategory?: string;
 	amount: number;
 	paymentMethod: PaymentMethod;
 	paymentDate: string;

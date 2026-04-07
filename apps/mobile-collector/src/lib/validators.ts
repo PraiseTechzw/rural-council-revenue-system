@@ -8,17 +8,16 @@ export const loginSchema = z.object({
 export const paymentSchema = z.object({
 	payerName: z.string().min(2, "Payer name is required"),
 	payerReference: z.string().optional(),
-	revenueSource: z.enum([
-		"shop_rental",
-		"housing_stand",
-		"mining_fee",
-		"market_levy",
-		"other"
-	]),
+	revenueSource: z.string().min(1, "Revenue source is required"),
+	revenueSourceId: z.string().optional(),
+	revenueSourceCategory: z.string().optional(),
 	amount: z.coerce.number().positive("Amount must be greater than zero"),
 	paymentMethod: z.enum(["cash", "mobile_money", "bank", "other"]),
 	paymentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Payment date must be YYYY-MM-DD"),
 	notes: z.string().max(500, "Notes are too long").optional()
+}).refine((values) => Boolean(values.revenueSourceId || values.revenueSourceCategory), {
+	message: "Revenue source is required",
+	path: ["revenueSource"]
 });
 
 export type LoginSchemaInput = z.infer<typeof loginSchema>;

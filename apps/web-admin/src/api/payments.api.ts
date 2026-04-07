@@ -16,7 +16,7 @@ export async function listPayments(params: Record<string, string | number | bool
 
 export async function createPayment(payload: {
 	payerName: string;
-	revenueSourceCategory: string;
+	revenueSourceId: string;
 	amount: number;
 	paymentMethod: string;
 	paymentDate: string;
@@ -24,6 +24,7 @@ export async function createPayment(payload: {
 	collectorId: string;
 	offlineReferenceId?: string;
 	wardId?: string | null;
+	revenueSourceCategory?: string;
 }) {
 	const { data } = await apiClient.post<ApiResponse<PaymentRecord>>("/payments", payload);
 

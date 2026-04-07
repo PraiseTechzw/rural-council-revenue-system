@@ -233,6 +233,7 @@ export default function CollectorsPage() {
               <p className="text-sm text-slate-500">Select a collector from the table.</p>
             ) : (
               <form
+                key={selectedCollector.id}
                 className="space-y-3"
                 onSubmit={async (event) => {
                   event.preventDefault();

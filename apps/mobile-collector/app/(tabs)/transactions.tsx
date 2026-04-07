@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { AppScreen } from "../../src/components/app-screen";
 import { StatusPill } from "../../src/components/status-pill";
 import { colors } from "../../src/constants/colors";
+import { getRevenueSourceLabel } from "../../src/constants/revenue-types";
 import { formatCurrency, formatShortDate } from "../../src/lib/format";
 import { useOfflineQueue } from "../../src/hooks/useOfflineQueue";
 
@@ -17,8 +18,9 @@ export default function TransactionsScreen() {
     return transactions.filter((tx) => {
       const matchesFilter = filter === "all" ? true : tx.syncStatus === filter;
       const q = query.trim().toLowerCase();
+      const revenueSourceLabel = getRevenueSourceLabel(tx.revenueSource).toLowerCase();
       const matchesSearch =
-        q.length === 0 || tx.payerName.toLowerCase().includes(q) || tx.revenueSource.toLowerCase().includes(q);
+        q.length === 0 || tx.payerName.toLowerCase().includes(q) || revenueSourceLabel.includes(q);
 
       return matchesFilter && matchesSearch;
     });
@@ -69,7 +71,7 @@ export default function TransactionsScreen() {
               <Text style={styles.payer}>{tx.payerName}</Text>
               <StatusPill status={tx.syncStatus} />
             </View>
-            <Text style={styles.meta}>{tx.revenueSource}</Text>
+            <Text style={styles.meta}>{getRevenueSourceLabel(tx.revenueSource)}</Text>
             <Text style={styles.meta}>{formatShortDate(tx.paymentDate)}</Text>
             <Text style={styles.amount}>{formatCurrency(tx.amount)}</Text>
           </Pressable>

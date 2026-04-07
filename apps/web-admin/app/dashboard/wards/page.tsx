@@ -102,6 +102,7 @@ export default function WardsPage() {
               <p className="text-sm text-slate-500">Select a ward row to edit.</p>
             ) : (
               <form
+                key={selectedWard.id}
                 className="space-y-3"
                 onSubmit={async (event) => {
                   event.preventDefault();
