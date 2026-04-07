@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Sora, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import { AppProviders } from "@/components/providers/app-providers";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -27,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={`${plusJakartaSans.variable} ${sora.variable}`}>
-        <AppProviders>{children}</AppProviders>
+        {children}
       </body>
     </html>
   );

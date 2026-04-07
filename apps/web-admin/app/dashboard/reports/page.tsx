@@ -125,8 +125,8 @@ function ReportTable({
                 </td>
               </tr>
             ) : (
-              rows.map((row) => (
-                <tr key={String(row[idField] ?? Math.random())} className="border-t border-[#e9decb]">
+              rows.map((row, index) => (
+                <tr key={String(row[idField] ?? `${title}-${index}`)} className="border-t border-[#e9decb]">
                   <td className="px-3 py-2 text-slate-700">{String(row[nameField] ?? "N/A")}</td>
                   <td className="px-3 py-2 text-slate-700">{String(row.paymentCount ?? 0)}</td>
                   <td className="px-3 py-2 text-slate-700">{formatCurrency(Number(row.totalRevenue ?? 0))}</td>

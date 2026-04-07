@@ -1,47 +1,11 @@
-"use client";
-
-import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { DashboardShell } from "@/components/layout/dashboard-shell";
-import { useAuth } from "@/components/providers/auth-provider";
-import { canAccessDashboardPath } from "@/constants/navigation";
+import { AppProviders } from "@/components/providers/app-providers";
+import { DashboardAuthGate } from "@/components/layout/dashboard-auth-gate";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { isLoadingAuth, isAuthenticated, user } = useAuth();
-
-  useEffect(() => {
-    if (!isLoadingAuth && !isAuthenticated) {
-      router.replace("/login");
-      return;
-    }
-
-    if (!isLoadingAuth && user && !(user.role === "admin" || user.role === "finance_officer")) {
-      router.replace("/login");
-      return;
-    }
-
-    if (!isLoadingAuth && user && pathname && !canAccessDashboardPath(user.role, pathname)) {
-      router.replace("/dashboard");
-    }
-  }, [isAuthenticated, isLoadingAuth, pathname, router, user]);
-
-  if (isLoadingAuth) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="premium-panel px-8 py-6 text-center">
-          <p className="premium-kicker">Initializing</p>
-          <p className="mt-2 text-sm font-medium text-slate-700">Loading dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated || !user) {
-    return null;
-  }
-
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <AppProviders>
+      <DashboardAuthGate>{children}</DashboardAuthGate>
+    </AppProviders>
+  );
 }
